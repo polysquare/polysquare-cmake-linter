@@ -1,0 +1,5 @@
+setuptools
+testtools
+nose
+nose-parameterized
+cmakeast>=0.0.7
