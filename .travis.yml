@@ -1,0 +1,43 @@
+language: python
+python:
+- '2.7'
+- '3.4'
+- 'pypy'
+install:
+- if [ ${CMAKE_VERSION} == "3.1" ]; then
+     sudo apt-get -y purge cmake;
+     sudo add-apt-repository -y ppa:kubuntu-ppa/beta;
+     sudo apt-get update;
+     sudo apt-get install cmake;
+  fi
+- pip install -r requirements.txt
+- pip install polysquare-generic-file-linter python-coveralls flake8 pep8-naming pylint coverage
+- if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
+    pip install http://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz/download;
+  fi
+- gem install mdl
+script:
+- python setup.py build
+- coverage run --source=polysquarecmakelinter setup.py test
+- python setup.py install
+- pylint -f colorized tests/ polysquarecmakelinter/ --disable=r0903,R0904
+- if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then
+    pychecker tests/*.py polysquarecmakelinter/*.py;
+  fi
+- flake8 tests/ polysquarecmakelinter/
+- mdl .
+- find polysquarecmakelinter tests -type f -name "*.py" | xargs -L 1 polysquare-generic-file-linter
+after_success:
+- coverage report -m
+- coveralls
+- rm -rf polysquare_cmake_linter.egg-info/
+- rm -rf build/
+deploy:
+  provider: pypi
+  user:
+    secure: Gb0btOUFSLT5BJCfAxZi7ZX/pqJQnw4+HwULd12W8o3c9SHXKJKJzc5/4FH1XbwVHOP8tAI+U+ekp6X634Mrm1010v1f3t+fOp67ESUsALLmWwOmHeYK2YcRESq474ixg+i/sbcoiSQiXnh1tH4dTXhvP96WQiybitbmJsI4c1A=
+  password:
+    secure: KVcT0myOMwofemwsi2BCCC8YdgpVhdGYT/VX820jBcq5OSlj1PGm9xg9qXhBS0JVG7pWGe5vBwK5DbRgd8OJxZY/z14ppYH+3ReT1xpiNGfN62SH/IcbRncY20Z/XjL1yDZk1pT6Q3iqQs0b53zqX63qT3RuIEreW3HM9Q3zKlk=
+  on:
+    repo: polysquare/polysquare-cmake-linter
+    branch: master
