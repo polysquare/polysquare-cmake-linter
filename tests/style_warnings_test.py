@@ -277,6 +277,20 @@ class TestUppercaseVariableNamesOnly(TestCase):
         self.assertTrue(result)
 
     @parameterized.expand(parameters)
+    def test_pass_inside_deref(self, matcher, dummy):
+        """Checks that style/set_var_case passes when var in deref
+
+
+        Pass if variable is uppercase and inside of a deref, because variable
+        dereferenes are not sink variables.
+        """
+        xform = lambda x: "${" + x + "}"
+        result = run_linter_throw(gen_source_line(matcher,
+                                                  match_transform=xform),
+                                  whitelist=["style/set_var_case"])
+        self.assertTrue(result)
+
+    @parameterized.expand(parameters)
     def test_pass_other_quotes(self, matcher, dummy):
         """Checks that style/set_var_case passes with other args quoted"""
         quote = "\"{0}\""
