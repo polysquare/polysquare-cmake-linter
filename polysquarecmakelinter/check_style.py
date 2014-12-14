@@ -185,8 +185,8 @@ def func_args_aligned(contents, abstract_syntax_tree):
     def _check_horizontal_space(node, index):
         """Checks horizontal space between arguments on same line"""
         if index > 0:
-            current_column = node.arguments[index].col
-            previous_column = node.arguments[index - 1].col
+            current_column = node.arguments[index].col - 1
+            previous_column = node.arguments[index - 1].col - 1
             previous_len = len(node.arguments[index - 1].contents)
             spaces_start = previous_column + previous_len
             num_spaces = current_column - (previous_column + previous_len)
@@ -291,12 +291,12 @@ def func_args_aligned(contents, abstract_syntax_tree):
                 if align.col != baseline_col:
                     msg_parts.append("col {0}".format(baseline_col))
 
-                if misaligned_line is None:
+                if misaligned_col and align.col == baseline_col:
                     line_idx = arg.line - 1
-                    offset = min(0, align.col - arg.col)
+                    offset = max(0, arg.col - align.col)
                     spaces = max(0, align.col - arg.col)
                     replacement = util.replace_word(contents[line_idx],
-                                                    arg.col + offset,
+                                                    arg.col - 1 - offset,
                                                     " " * offset,
                                                     " " * spaces)
 
