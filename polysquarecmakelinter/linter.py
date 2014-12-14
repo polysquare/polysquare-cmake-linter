@@ -75,13 +75,20 @@ def lint(contents,
             k: v for (k, v) in dictionary.items() if condition(k)
         }
 
-    whitelist = whitelist if whitelist is not None else []
-    blacklist = blacklist if blacklist is not None else []
+    def _check_list(check_list, cond):
+        """A function that tests an object against a list if the list exists"""
+        def _check_against_list(key):
+            """Returns true if list exists and condition passes"""
+            return cond(check_list, key) if check_list is not None else True
+
+        return _check_against_list
 
     linter_functions = _keyvalue_pair_if(linter_functions,
-                                         lambda k: k in whitelist)
+                                         _check_list(whitelist,
+                                                     lambda l, k: k in l))
     linter_functions = _keyvalue_pair_if(linter_functions,
-                                         lambda k: k not in blacklist)
+                                         _check_list(blacklist,
+                                                     lambda l, k: k not in l))
 
     linter_errors = []
     for (code, function) in linter_functions.items():
