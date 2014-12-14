@@ -151,11 +151,10 @@ def set_variables_capitalized(contents, abstract_syntax_tree):
 
         evaluate_upper = evaluate.contents.upper()
 
-        # Argument should be either String, VariableDereference
-        # or Variable and a transformation to uppercase
-        # should have no effect
-        if not (util.is_word_sink_variable(evaluate.type) and
-                evaluate_upper == evaluate.contents):
+        # Argument should be either String or Variable and a transformation
+        # to uppercase should have no effect
+        if (util.is_word_sink_variable(evaluate.type) and
+                evaluate_upper != evaluate.contents):
             desc = "{0} must be uppercase".format(evaluate.contents)
             line = evaluate.line - 1
             replacement = util.replace_word(contents[line],
