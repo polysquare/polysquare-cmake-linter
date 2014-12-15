@@ -360,6 +360,17 @@ class TestFunctionArgumentsFallOnLine(TestCase):
             run_linter_throw("call (ONE   TWO)\n",
                              whitelist=["style/argument_align"])
 
+    def test_suggest_even_spacing(self):
+        """style/argument_align suggests even spacing on the same line"""
+        def get_replacement():
+            """Gets replacement for unevenly spaced lines"""
+            run_linter_throw("call (ONE   TWO)\n",
+                             whitelist=["style/argument_align"])
+
+        exception = self.assertRaises(LinterFailure, get_replacement)
+        self.assertEqual(replacement(exception),
+                         (1, "call (ONE TWO)\n"))
+
     def test_fail_args_not_aligned(self):
         """style/argument_align fails when args do not fall on baseline col"""
         with ExpectedException(LinterFailure):
@@ -389,6 +400,25 @@ class TestFunctionArgumentsFallOnLine(TestCase):
                              "             THREE)\n",
                              whitelist=["style/argument_align"])
 
+    # Over and under-indent
+    @parameterized.expand([
+        "     THREE)\n",
+        "         THREE)\n"
+    ])
+    def test_suggest_baseline_align(self, third_line):
+        """style/argument_align suggests alignment to the baseline"""
+        def get_replacement():
+            """Gets replacement for unevenly spaced lines"""
+            run_linter_throw("call (ONE\n"
+                             "      TWO\n"
+                             + third_line,
+                             whitelist=["style/argument_align"])
+
+        exception = self.assertRaises(LinterFailure, get_replacement)
+        self.assertEqual(replacement(exception),
+                         # eg  call (ONE
+                         (3, ("      THREE)\n")))
+
     def test_fail_align_func_name(self):
         """style/argument_align fails when args not aligned after second"""
         with ExpectedException(LinterFailure):
@@ -404,6 +434,20 @@ class TestFunctionArgumentsFallOnLine(TestCase):
                              "       THREE)\n"
                              "endmacro ()\n",
                              whitelist=["style/argument_align"])
+
+    def test_suggest_align_first_arg(self):
+        """style/argument_align suggests alignment to function's first arg"""
+        def get_replacement():
+            """Gets replacement for unevenly spaced lines"""
+            run_linter_throw("function (name ONE\n"
+                             "            TWO)\n"
+                             "endfunction ()\n",
+                             whitelist=["style/argument_align"])
+
+        exception = self.assertRaises(LinterFailure, get_replacement)
+        self.assertEqual(replacement(exception),
+                         # eg, function (name ONE
+                         (2, ("               TWO)\n")))
 
     def test_pass_args_aligend(self):
         """style/argument_align passes when args aligned"""

@@ -8,7 +8,7 @@
 from setuptools import setup, find_packages
 
 setup(name="polysquare-cmake-linter",
-      version="0.0.3",
+      version="0.0.4",
       description="Polysquare CMake Linter",
       long_description="Lint a CMake file for polysquare CMake style guide",
       author="Sam Spilsbury",
