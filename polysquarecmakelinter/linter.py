@@ -122,7 +122,7 @@ class ShowAvailableChecksAction(argparse.Action):
             sys.exit(0)
 
 
-def _parse_arguments():
+def _parse_arguments(arguments=None):
     """Return a parser context result."""
     parser = argparse.ArgumentParser(description="Lint for Polysquare "
                                      "style guide")
@@ -157,7 +157,7 @@ def _parse_arguments():
                         action="store_const",
                         const=True)
 
-    return parser.parse_args()
+    return parser.parse_args(arguments)
 
 
 def _report_lint_error(error, file_path):
@@ -183,9 +183,9 @@ def _apply_replacement(error, found_file, file_lines):
     found_file.truncate()
 
 
-def main():
+def main(arguments=None):
     """Entry point for the linter."""
-    result = _parse_arguments()
+    result = _parse_arguments(arguments)
 
     num_errors = 0
     for found_file in result.files:
