@@ -3,9 +3,18 @@
 # Entry point for linter.
 #
 # See LICENCE.md for Copyright information
-""" Main module for linter """
+""" Main module for linter."""
+
+import argparse
+
+import os
+
+import re
+
+import sys
 
 from cmakeast import ast
+
 from polysquarecmakelinter import check_access as access
 from polysquarecmakelinter import check_correctness as correct
 from polysquarecmakelinter import check_structure as structure
@@ -13,16 +22,11 @@ from polysquarecmakelinter import check_style as style
 from polysquarecmakelinter import check_unused as unused
 from polysquarecmakelinter import ignore
 
-import argparse
-import os
-import re
-import sys
-
 _RE_NOLINT = re.compile(r"^.*#\s+NOLINT:")
 
 
 def should_ignore(line, warning):
-    """Specify whether or not to ignore warnings on this line"""
+    """Specify whether or not to ignore warnings on this line."""
     match = _RE_NOLINT.search(line)
     if match:
         try:
@@ -31,7 +35,7 @@ def should_ignore(line, warning):
                 return True
             elif line[match.end():match.end() + len(warning)] == warning:
                 return True
-        except IndexError:
+        except IndexError:  # pylint:disable=W0704
             pass
 
     return False
@@ -59,26 +63,25 @@ def lint(contents,
          whitelist=None,
          blacklist=None,
          **kwargs):
-    """Actually lints some file contents.
+    r"""Actually lints some file contents.
 
     Contents should be a raw string with \n. whitelist is a list of checks
     to only perform, blacklist is list of checks to never perform.
     """
-
     abstract_syntax_tree = ast.parse(contents)
     contents_lines = contents.splitlines(True)
     linter_functions = LINTER_FUNCTIONS
 
     def _keyvalue_pair_if(dictionary, condition):
-        """Returns a key-value pair in dictionary if condition matched"""
+        """Return a key-value pair in dictionary if condition matched."""
         return {
             k: v for (k, v) in dictionary.items() if condition(k)
         }
 
     def _check_list(check_list, cond):
-        """A function that tests an object against a list if the list exists"""
+        """Return filter function for cond."""
         def _check_against_list(key):
-            """Returns true if list exists and condition passes"""
+            """Return true if list exists and condition passes."""
             return cond(check_list, key) if check_list is not None else True
 
         return _check_against_list
@@ -102,10 +105,11 @@ def lint(contents,
 
 
 class ShowAvailableChecksAction(argparse.Action):
-    """If --checks is encountered, just show available checks and exit"""
+
+    """If --checks is encountered, just show available checks and exit."""
 
     def __call__(self, parser, namespace, values, option_string=None):
-
+        """"Execute action."""
         del namespace
         del parser
         del values
@@ -119,8 +123,7 @@ class ShowAvailableChecksAction(argparse.Action):
 
 
 def _parse_arguments():
-    """Returns a parser context result"""
-
+    """Return a parser context result."""
     parser = argparse.ArgumentParser(description="Lint for Polysquare "
                                      "style guide")
     parser.add_argument("--checks",
@@ -158,7 +161,7 @@ def _parse_arguments():
 
 
 def _report_lint_error(error, file_path):
-    """Report a linter error"""
+    """Report a linter error."""
     line = error[1].line
     code = error[0]
     description = error[1].description
@@ -169,7 +172,7 @@ def _report_lint_error(error, file_path):
 
 
 def _apply_replacement(error, found_file, file_lines):
-    """Apply a single replacement"""
+    """Apply a single replacement."""
     fixed_lines = file_lines
     fixed_lines[error[1].line - 1] = error[1].replacement
     concatenated_fixed_lines = "".join(fixed_lines)
@@ -181,7 +184,7 @@ def _apply_replacement(error, found_file, file_lines):
 
 
 def main():
-    """Entry point for the linter"""
+    """Entry point for the linter."""
     result = _parse_arguments()
 
     num_errors = 0
@@ -219,4 +222,8 @@ def main():
 
                 num_errors += 1
 
-    sys.exit(num_errors)
+    return num_errors
+
+
+if __name__ == "__main__":
+    main()

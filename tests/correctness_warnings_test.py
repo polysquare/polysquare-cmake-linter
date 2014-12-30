@@ -7,15 +7,18 @@
 # pylint:  disable=no-self-use
 #
 # See LICENCE.md for Copyright information
-"""Test cases for correctness/* checks"""
-
-from tests.warnings_test_common import (LinterFailure,
-                                        replacement,
-                                        run_linter_throw)
+"""Test cases for correctness/* checks."""
 
 from nose_parameterized import parameterized
+
 from polysquarecmakelinter import check_correctness
-from testtools import (ExpectedException, TestCase)
+
+from tests.warnings_test_common import LinterFailure
+from tests.warnings_test_common import replacement
+from tests.warnings_test_common import run_linter_throw
+
+from testtools import ExpectedException
+from testtools import TestCase
 
 # Generate some quote-only variable combinations
 QUOTE_ONLY_TEST_VARIABLES = []
@@ -38,32 +41,33 @@ for variable in check_correctness.ALWAYS_QUOTE_VARIABLES_CONTAINING:
 
 
 class TestQuoteVariablesWhichMayHaveSpaces(TestCase):
-    """Test case for ensuring that certain variables are always quoted"""
+
+    """Test case for ensuring that certain variables are always quoted."""
 
     @parameterized.expand(QUOTE_ONLY_TEST_VARIABLES)
     def test_fail_deref_certain_vars(self,
                                      bad_deref):
-        """correctness/quotes fails when dereffing certain variable names"""
+        """Test correctness/quotes fails if dereffing some variable names."""
         with ExpectedException(LinterFailure):
             run_linter_throw("call ({0})".format(bad_deref),
                              whitelist=["correctness/quotes"])
 
     def test_fail_when_using_slashes(self):
-        """correctness/quotes fails when using raw unquoted path"""
+        """Test correctness/quotes fails when using raw unquoted path."""
         with ExpectedException(LinterFailure):
             run_linter_throw("call (abc/def)\n",
                              whitelist=["correctness/quotes"])
 
     @parameterized.expand(NO_QUOTE_TEST_VARIABLES)
     def test_pass_deref_nonpath_var(self, deref):
-        """correctness/quotes passes when dereffing modified path var name"""
+        """Test correctness/quotes passes with modified path var name."""
         self.assertTrue(run_linter_throw("call ({0})".format(deref),
                                          whitelist=["correctness/quotes"]))
 
     def test_replace_when_using_slashes(self):
-        """correctness/quotes replaces raw unquoted path with quotes"""
+        """Test correctness/quotes replaces raw unquoted path with quotes."""
         def get_replacement():
-            """Get the replacement for raw unquoted path"""
+            """Get the replacement for raw unquoted path."""
             run_linter_throw("call (abc/def)\n",
                              whitelist=["correctness/quotes"])
 
@@ -73,9 +77,9 @@ class TestQuoteVariablesWhichMayHaveSpaces(TestCase):
 
     @parameterized.expand(QUOTE_ONLY_TEST_VARIABLES)
     def test_replace_deref_certain_vars(self, bad_deref):
-        """correctness/quotes replaces certain variable derefs with quotes"""
+        """Test correctness/quotes replaces variable derefs with quotes."""
         def get_replacement():
-            """Gets the replacement for the dereffed path"""
+            """Get the replacement for the dereffed path."""
             run_linter_throw("call ({0})".format(bad_deref),
                              whitelist=["correctness/quotes"])
 

@@ -3,7 +3,7 @@
 # Some types that are shared amongst linters and checks
 #
 # See LICENCE.md for Copyright information
-"""Some types that are shared amongst linters and checks"""
+"""Some types that are shared amongst linters and checks."""
 
 from collections import namedtuple
 
@@ -12,10 +12,11 @@ from collections import namedtuple
 # and provide a default value
 class LinterFailure(namedtuple("LinterFailure",
                                "description line replacement")):
-    """An immutable type representing a linter failure"""
+
+    """An immutable type representing a linter failure."""
 
     def __new__(cls, description, line, replacement=None):
-        """Factory function"""
+        """Factory function."""
         return super(LinterFailure, cls).__new__(cls,
                                                  description,
                                                  line,

@@ -46,11 +46,12 @@
 # endfunction ()
 #
 # See LICENCE.md for Copyright information
-"""Find all set variables and order by scope"""
+"""Find all set variables and order by scope."""
 
 import re
 
 from collections import namedtuple
+
 from polysquarecmakelinter import find_set_variables
 
 Variable = namedtuple("Variable", "node source")
@@ -102,7 +103,8 @@ IF_KEYWORDS = [
 # We use a class with constant variables here so that we can get int->int
 # comparison. Comparing enums is slow because of the type lookup.
 class VariableSource(object):
-    """The source of a variable in a scope"""
+
+    """The source of a variable in a scope."""
 
     ForeachVar = 0
     MacroArg = 1
@@ -113,7 +115,8 @@ class VariableSource(object):
 
 
 class ScopeType(object):
-    """The source of a variable in a scope"""
+
+    """The source of a variable in a scope."""
 
     Foreach = 0
     Macro = 1
@@ -122,10 +125,11 @@ class ScopeType(object):
 
 
 class _Scope(object):
-    """A place where variables are hoisted"""
+
+    """A place where variables are hoisted."""
 
     def __init__(self, info, parent):
-        """Initializes parent"""
+        """Initialize parent."""
         super(_Scope, self).__init__()
 
         self.parent = parent
@@ -133,8 +137,7 @@ class _Scope(object):
         self.scopes = []
 
     def add_subscope(self, name, node, parent, factory):
-        """Adds a new subscope"""
-
+        """Add a new subscope."""
         assert node.__class__.__name__ != "ToplevelBody"
 
         node_scope_types = {
@@ -151,16 +154,15 @@ class _Scope(object):
                                    parent))
 
 
-def traverse_scopes(abstract_syntax_tree,
+def traverse_scopes(abstract_syntax_tree,  # NOQA
                     body_function_call,
                     header_function_call,
                     factory):
-    """Finds all set variables in tree and orders into scopes"""
-
+    """Find all set variables in tree and orders into scopes."""
     global_scope = factory(ScopeInfo("toplevel", ScopeType.Global), None)
 
     def _header_body_visitor(enclosing_scope, header_scope, header, body):
-        """Visits a header-body like node"""
+        """Visit a header-body like node."""
         if header is not None:
 
             header_function_call(header, enclosing_scope, header_scope)
@@ -169,11 +171,9 @@ def traverse_scopes(abstract_syntax_tree,
             _node_recurse(statement, enclosing_scope, header_scope)
 
     def _node_recurse(node, enclosing_scope, header_scope):
-        """Visits any node, adjusts scopes"""
-
+        """Visit any node, adjusts scopes."""
         def _handle_if_block(node):
-            """Handles if blocks"""
-
+            """Handle if blocks."""
             _header_body_visitor(enclosing_scope,
                                  header_scope,
                                  node.if_statement.header,
@@ -192,8 +192,7 @@ def traverse_scopes(abstract_syntax_tree,
                                      node.else_statement.body)
 
         def _handle_foreach_statement(node):
-            """Handles foreach statements"""
-
+            """Handle foreach statements."""
             header_scope.add_subscope("foreach", node, header_scope, factory)
 
             _header_body_visitor(enclosing_scope,
@@ -202,16 +201,14 @@ def traverse_scopes(abstract_syntax_tree,
                                  node.body)
 
         def _handle_while_statement(node):
-            """Handles while statements"""
-
+            """Handle while statements."""
             _header_body_visitor(enclosing_scope,
                                  header_scope,
                                  node.header,
                                  node.body)
 
         def _handle_function_declaration(node):
-            """Handles function declarations"""
-
+            """Handle function declarations."""
             header_scope.add_subscope(node.header.arguments[0].contents,
                                       node,
                                       header_scope,
@@ -223,8 +220,7 @@ def traverse_scopes(abstract_syntax_tree,
                                  node.body)
 
         def _handle_macro_declaration(node):
-            """Handles macro declarations"""
-
+            """Handle macro declarations."""
             header_scope.add_subscope(node.header.arguments[0].contents,
                                       node,
                                       header_scope,
@@ -236,12 +232,11 @@ def traverse_scopes(abstract_syntax_tree,
                                  node.body)
 
         def _handle_function_call(node):
-            """Handles function calls - does nothing, nothing to recurse"""
+            """Handle function calls - does nothing, nothing to recurse."""
             body_function_call(node, enclosing_scope, header_scope)
 
         def _handle_toplevel_body(node):
-            """Handles the special toplevel body node"""
-
+            """Handle the special toplevel body node."""
             _header_body_visitor(enclosing_scope,
                                  header_scope,
                                  None,
@@ -264,25 +259,47 @@ def traverse_scopes(abstract_syntax_tree,
     return global_scope
 
 
-def set_in_tree(abstract_syntax_tree):
-    """Find variables set by scopes"""
+def _scope_to_bind_var_to(function_call, enclosing):
+    """Find a scope to bind variables set by function_call."""
+    if function_call.name == "set":
+        try:
+            if function_call.arguments[2].contents == "PARENT_SCOPE":
+                assert enclosing.parent is not None
+                enclosing = enclosing.parent
+            elif function_call.arguments[2].contents == "CACHE":
+                while enclosing.parent is not None:
+                    enclosing = enclosing.parent
+        except IndexError:  # pylint:disable=W0704
+            pass
 
+    # Another special case for set_property with GLOBAL as the
+    # first argument. Create a notional "variable"
+    elif function_call.name == "set_property":
+        assert len(function_call.arguments[0]) >= 3
+        if function_call.arguments[0].contents == "GLOBAL":
+            while enclosing.parent is not None:
+                enclosing = enclosing.parent
+
+    return enclosing
+
+
+def set_in_tree(abstract_syntax_tree):
+    """Find variables set by scopes."""
     def scope_factory(info, parent):
-        """Constructs a "set variables" scope"""
+        """Construct a "set variables" scope."""
         class SetVariablesScope(_Scope):
-            """Set variables in this scope"""
+
+            """Set variables in this scope."""
 
             def __init__(self, info, parent):
-                """Initialzes set_vars member"""
-
+                """Initialze set_vars member."""
                 super(SetVariablesScope, self).__init__(info, parent)
                 self.set_vars = []
 
         return SetVariablesScope(info, parent)
 
     def body_function_call(node, enclosing, body_header):
-        """Handles function calls in a body and provides scope"""
-
+        """Handle function calls in a body and provides scope."""
         del body_header
 
         var_types = {
@@ -295,39 +312,27 @@ def set_in_tree(abstract_syntax_tree):
         if set_var:
 
             # Special case for "set" and PARENT_SCOPE/CACHE scope
-            if node.name == "set":
-                try:
-                    if node.arguments[2].contents == "PARENT_SCOPE":
-                        assert enclosing.parent is not None
-                        enclosing = enclosing.parent
-                    elif node.arguments[2].contents == "CACHE":
-                        while enclosing.parent is not None:
-                            enclosing = enclosing.parent
-                except IndexError:
-                    pass
-            # Another special case for set_property with GLOBAL as the
-            # first argument. Create a notional "variable"
-            elif node.name == "set_property":
-                assert len(node.arguments[0]) >= 3
-                if node.arguments[0].contents == "GLOBAL":
-                    while enclosing.parent is not None:
-                        enclosing = enclosing.parent
+            enclosing = _scope_to_bind_var_to(node, enclosing)
 
             info = enclosing.info
-            enclosing.set_vars.append(Variable(set_var, var_types[info.type]))
+            enclosing.set_vars.append(Variable(set_var,
+                                               var_types[info.type]))
 
     def header_function_call(node, header_enclosing, header):
-        """Handles the "header" function call and provides scope"""
-
+        """Handle the "header" function call and provides scope."""
         del header_enclosing
 
         def _get_header_vars(header):
-            """Adds variables implicitly set by header function call"""
-            if header.name == "foreach":
-                return [header.arguments[0]]
-            elif header.name == "function" or header.name == "macro":
-                return header.arguments[1:]
-            else:
+            """Add variables implicitly set by header function call."""
+            header_variables = {
+                "foreach": [header.arguments[0]],
+                "function": header.arguments[1:],
+                "macro": header.arguments[1:]
+            }
+
+            try:
+                return header_variables[header.name]
+            except KeyError:
                 return []
 
         var_types = {
@@ -347,23 +352,22 @@ def set_in_tree(abstract_syntax_tree):
 
 
 def used_in_tree(abstract_syntax_tree):
-    """Find variables used in scopes"""
-
+    """Find variables used in scopes."""
     def scope_factory(info, parent):
-        """Constructs a "set variables" scope"""
+        """Construct a "set variables" scope."""
         class UsedVariablesScope(_Scope):
-            """Used variables in this scope"""
+
+            """Used variables in this scope."""
 
             def __init__(self, info, parent):
-                """Initialzes used_vars member"""
-
+                """Initialze used_vars member."""
                 super(UsedVariablesScope, self).__init__(info, parent)
                 self.used_vars = []
 
         return UsedVariablesScope(info, parent)
 
     def body_function_call(node, body_enclosing, header):
-        """Handles function calls in a node body"""
+        """Handle function calls in a node body."""
         del body_enclosing
 
         var_types = {
@@ -373,14 +377,14 @@ def used_in_tree(abstract_syntax_tree):
             ScopeType.Global: VariableSource.GlobalVar
         }
 
-        for argument in node.arguments:
-            if _RE_VARIABLE_USE.search(argument.contents) is not None:
-                info = header.info
-                header.used_vars.append(Variable(argument,
-                                                 var_types[info.type]))
+        info = header.info
+        header.used_vars.extend([Variable(a,
+                                          var_types[info.type])
+                                 for a in node.arguments
+                                 if _RE_VARIABLE_USE.search(a.contents)])
 
     def header_function_call(node, header_enclosing, current_header):
-        """Handles function calls in a node header"""
+        """Handle function calls in a node header."""
         del header_enclosing
 
         var_types = {

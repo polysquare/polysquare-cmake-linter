@@ -3,20 +3,21 @@
 # Details to find certain occurrences of nodes
 #
 # See LICENCE.md for Copyright information
-"""Details to find certain occurrences of nodes"""
-
-from cmakeast import ast_visitor
-from polysquarecmakelinter import (find_set_variables,
-                                   find_variables_in_scopes,
-                                   util)
+"""Detail to find certain occurrences of nodes."""
 
 import re
+
+from cmakeast import ast_visitor
+
+from polysquarecmakelinter import find_set_variables
+from polysquarecmakelinter import find_variables_in_scopes
+from polysquarecmakelinter import util
 
 _RE_VARIABLE_USE = re.compile(r"(?<![^\${])[0-9A-Za-z_]+(?![^]}])")
 
 
 def _append_line_occurence(tracker, name, line):
-    """Appends line to name entry in tracker"""
+    """Append line to name entry in tracker."""
     if name not in tracker.keys():
         tracker[name] = []
 
@@ -24,12 +25,11 @@ def _append_line_occurence(tracker, name, line):
 
 
 def calls(abstract_syntax_tree, track_call):
-    """Returns a dict of calls mapped to where they occurred"""
-
+    """Return a dict of calls mapped to where they occurred."""
     call_lines = {}
 
     def _call_handler(name, node, depth):
-        """Visit all calls in this module"""
+        """Viit all calls in this module."""
         assert name == "FunctionCall"
 
         del depth
@@ -44,12 +44,11 @@ def calls(abstract_syntax_tree, track_call):
 
 
 def definitions(abstract_syntax_tree, track_definition):
-    """Returns a dict of definitions mapped to where they occurred"""
-
+    """Return a dict of definitions mapped to where they occurred."""
     definition_lines = {}
 
     def _definition_handler(name, node, depth):
-        """Visits all definitions"""
+        """Visit all definitions."""
         assert name == "FunctionDefinition" or name == "MacroDefinition"
         assert len(node.header.arguments) > 0
 
@@ -68,10 +67,9 @@ def definitions(abstract_syntax_tree, track_definition):
 
 
 def private_calls_and_definitions(abstract_syntax_tree):
-    """Returns a tuple of all private calls and definitions"""
-
+    """Return a tuple of all private calls and definitions."""
     def _definition_is_private(node):
-        """Checks if a definition is private"""
+        """Check if a definition is private."""
         return node.header.arguments[0].contents.startswith("_")
 
     private_calls = calls(abstract_syntax_tree,
@@ -83,8 +81,7 @@ def private_calls_and_definitions(abstract_syntax_tree):
 
 
 def _append_to_set_variables(name, node, set_variables):
-    """Appends to a dict of set variables"""
-
+    """Append to a dict of set variables."""
     if name not in set_variables.keys():
         set_variables[name] = []
 
@@ -92,12 +89,10 @@ def _append_to_set_variables(name, node, set_variables):
 
 
 def toplevel_set_private_vars(abstract_syntax_tree):
-    """Finds all toplevel private variables
-
+    """Find all toplevel private variables.
 
     Returns a dict of variable names to places where such variables were set
     """
-
     set_variables = {}
 
     for statement in abstract_syntax_tree.statements:
@@ -121,8 +116,7 @@ def toplevel_set_private_vars(abstract_syntax_tree):
 
 
 def variables_used_in_expr(word_node):
-    """Returns a set of variable names "used" by a node"""
-
+    """Return a set of variable names "used" by a node."""
     assert word_node.__class__.__name__ == "Word"
 
     used_variables_set = {}
@@ -140,15 +134,13 @@ def variables_used_in_expr(word_node):
 def variables_used_matching(abstract_syntax_tree,
                             node_matcher,
                             name_matcher):
-    """Returns a set of variable names used whose nodes satisfy matchers"""
-
+    """Return a set of variable names used whose nodes satisfy matchers."""
     variables_used = {}
 
     global_scope = find_variables_in_scopes.used_in_tree(abstract_syntax_tree)
 
     def _visit_scope(scope):
-        """Visits a scope"""
-
+        """Visit a scope."""
         for subscope in scope.scopes:
             _visit_scope(subscope)
 
