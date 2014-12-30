@@ -3,4 +3,4 @@
 # Entry point when loading module
 #
 # See LICENCE.md for Copyright information
-"""Entry point when loading module"""
+"""Entry point when loading module."""

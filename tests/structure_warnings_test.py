@@ -7,22 +7,26 @@
 # pylint:  disable=no-self-use
 #
 # See LICENCE.md for Copyright information
-"""Test cases for correctness/* checks"""
+"""Test cases for correctness/* checks."""
 
-from tests.warnings_test_common import (LinterFailure,
-                                        run_linter_throw,
-                                        replacement,
-                                        DEFINITION_TYPES)
 from nose_parameterized import parameterized
-from testtools import (ExpectedException, TestCase)
+
+from tests.warnings_test_common import DEFINITION_TYPES
+from tests.warnings_test_common import LinterFailure
+from tests.warnings_test_common import replacement
+from tests.warnings_test_common import run_linter_throw
+
+from testtools import ExpectedException
+from testtools import TestCase
 
 
 class TestFunctionsMustBeNamespaces(TestCase):
-    """Tests that all functions must be namespaced"""
+
+    """Test that all functions must be namespaced."""
 
     @parameterized.expand(DEFINITION_TYPES)
     def test_pass_pub_func_namespaced(self, definition):
-        """structure/namespace passes when public functions namespaced"""
+        """structure/namespace passes when public functions namespaced."""
         script = "{0} (our_call ARGUMENT)\nend{0} ()".format(definition)
         self.assertTrue(run_linter_throw(script,
                                          whitelist=["structure/namespace"],
@@ -30,7 +34,7 @@ class TestFunctionsMustBeNamespaces(TestCase):
 
     @parameterized.expand(DEFINITION_TYPES)
     def test_pass_priv_func_namespaced(self, definition):
-        """structure/namespace passes when private functions namespaced"""
+        """structure/namespace passes when private functions namespaced."""
         script = "{0} (_our_call ARGUMENT)\nend{0} ()".format(definition)
         self.assertTrue(run_linter_throw(script,
                                          whitelist=["structure/namespace"],
@@ -38,14 +42,14 @@ class TestFunctionsMustBeNamespaces(TestCase):
 
     @parameterized.expand(DEFINITION_TYPES)
     def test_pass_no_namespace_passed(self, definition):
-        """structure/namespace passes when no namespace specified"""
+        """structure/namespace passes when no namespace specified."""
         script = "{0} (call ARGUMENT)\nend{0} ()".format(definition)
         self.assertTrue(run_linter_throw(script,
                                          whitelist=["structure/namespace"]))
 
     @parameterized.expand(DEFINITION_TYPES)
     def test_fail_outside_namespace(self, definition):
-        """structure/namespace fails when definition outside namespace"""
+        """structure/namespace fails when definition outside namespace."""
         script = "{0} (not_our_call ARGUMENT)\nend{0} ()".format(definition)
         with ExpectedException(LinterFailure):
             run_linter_throw(script, namespace="our",
@@ -53,7 +57,7 @@ class TestFunctionsMustBeNamespaces(TestCase):
 
     @parameterized.expand(DEFINITION_TYPES)
     def test_fail_priv_out_namespace(self, definition):
-        """structure/namespace fails when priv definition outside namespace"""
+        """structure/namespace fails when priv definition outside namespace."""
         script = "{0} (_not_our_call ARGUMENT)\nend{0} ()".format(definition)
         with ExpectedException(LinterFailure):
             run_linter_throw(script, namespace="our",
@@ -61,12 +65,12 @@ class TestFunctionsMustBeNamespaces(TestCase):
 
     @parameterized.expand(DEFINITION_TYPES)
     def test_prepend_with_namespace(self, definition):
-        """structure/namespace prepends namespace as replacement"""
+        """structure/namespace prepends namespace as replacement."""
         name = "not_our_call"
         script = "{0} ({1} ARGUMENT)\nend{0} ()".format(definition, name)
 
         def get_replacement():
-            """Gets replacement for un-namespaced definition"""
+            """Get replacement for un-namespaced definition."""
             run_linter_throw(script, namespace="our",
                              whitelist=["structure/namespace"])
 
@@ -78,12 +82,12 @@ class TestFunctionsMustBeNamespaces(TestCase):
 
     @parameterized.expand(DEFINITION_TYPES)
     def test_priv_prepend_namespace(self, definition):
-        """structure/namespace prepends namespace after _ as replacement"""
+        """structure/namespace prepends namespace after _ as replacement."""
         name = "_not_our_call"
         script = "{0} ({1} ARGUMENT)\nend{0} ()".format(definition, name)
 
         def get_replacement():
-            """Gets replacement for un-namespaced private definition"""
+            """Get replacement for un-namespaced private definition."""
             run_linter_throw(script, namespace="our",
                              whitelist=["structure/namespace"])
 

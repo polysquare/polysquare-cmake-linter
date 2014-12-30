@@ -3,15 +3,19 @@
 # Linter checks for potentially buggy behaviour
 #
 # See LICENCE.md for Copyright information
-"""Linter checks for potentially buggy behaviour"""
-
-from cmakeast import ast_visitor
-from cmakeast.ast import WordType
-from collections import namedtuple
-from polysquarecmakelinter import util
-from polysquarecmakelinter.types import LinterFailure
+"""Linter checks for potentially buggy behaviour."""
 
 import re
+
+from collections import namedtuple
+
+from cmakeast import ast_visitor
+
+from cmakeast.ast import WordType
+
+from polysquarecmakelinter import util
+
+from polysquarecmakelinter.types import LinterFailure
 
 _RE_PATH_SLASH = re.compile(r"[\\/]")
 
@@ -19,7 +23,7 @@ _AlwaysQuote = namedtuple("_AlwaysQuoteT", "variable regex")
 
 
 def _always_quote_if_at_end(variable):
-    """Returns an _AlwaysQuote with regex matching variable at end"""
+    """Return an _AlwaysQuote with regex matching variable at end."""
     regex = r"\${.*(?<=[_{])" + variable + "}"
     return _AlwaysQuote(variable, re.compile(regex))
 
@@ -39,18 +43,17 @@ _ALWAYS_QUOTE_MATCHERS_INT = (ALWAYS_QUOTE_VARIABLES_CONTAINING +
 
 
 def path_variables_quoted(contents, abstract_syntax_tree):
-    """Checks that each variable mutated is capitalized"""
-
+    """Check that each variable mutated is capitalized."""
     errors = []
 
     def _word_visitor(name, node, depth):
-        """Visits all words"""
+        """Visit all words."""
         assert name == "Word"
 
         del depth
 
         def _generate_error(node):
-            """Generates an error and replacement for node in violation"""
+            """Generate an error and replacement for node in violation."""
             msg = "Path {0} must be quoted".format(node.contents)
             line_index = node.line - 1
             col_index = node.col - 1

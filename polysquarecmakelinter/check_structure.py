@@ -3,16 +3,17 @@
 # Linter checks for script structure
 #
 # See LICENCE.md for Copyright information
-"""Linter checks for script structure"""
+"""Linter checks for script structure."""
 
 from cmakeast import ast_visitor
+
 from polysquarecmakelinter import util
+
 from polysquarecmakelinter.types import LinterFailure
 
 
 def definitions_namespaced(contents, abstract_syntax_tree, **kwargs):
-    """Checks that function and macro definitions are namespaced"""
-
+    """Check that function and macro definitions are namespaced."""
     errors = []
 
     try:
@@ -21,7 +22,7 @@ def definitions_namespaced(contents, abstract_syntax_tree, **kwargs):
         return errors
 
     def _definition_handler(name, node, depth):
-        """Visits all definitions"""
+        """Visit all definitions."""
         assert name == "FunctionDefinition" or name == "MacroDefinition"
         assert len(node.header.arguments) > 0
 

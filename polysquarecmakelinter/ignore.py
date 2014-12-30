@@ -3,15 +3,13 @@
 # Wrapper functions to ignore certain arguments in callbacks
 #
 # See LICENCE.md for Copyright information
-"""Wrapper functions to ignore certain arguments in callbacks"""
+"""Wrapper functions to ignore certain arguments in callbacks."""
 
 
 def all_but_ast(check):
-    """Only passes AST to check"""
-
+    """Only passes AST to check."""
     def _check_wrapper(contents, ast, **kwargs):
-        """Wraps check and passes the AST to it"""
-
+        """Wrap check and passes the AST to it."""
         del contents
         del kwargs
 
@@ -21,11 +19,9 @@ def all_but_ast(check):
 
 
 def check_kwargs(check):
-    """Does not pass kwargs to check"""
-
+    """Return wrapper for check function."""
     def _check_wrapper(contents, ast, **kwargs):
-        """Does not pass kwargs to check"""
-
+        """Do not pass kwargs to check."""
         del kwargs
 
         return check(contents, ast)
@@ -34,11 +30,9 @@ def check_kwargs(check):
 
 
 def visitor_depth(visitor):
-    """Does not pass depth to visitor"""
-
+    """Return wrapper for depth function."""
     def _visitor_wrapper(name, node, depth):
-        """Does not pass depth to visitor"""
-
+        """Do not pass depth to visitor."""
         del depth
 
         visitor(name, node)
