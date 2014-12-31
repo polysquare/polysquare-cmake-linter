@@ -102,7 +102,7 @@ IF_KEYWORDS = [
 
 # We use a class with constant variables here so that we can get int->int
 # comparison. Comparing enums is slow because of the type lookup.
-class VariableSource(object):
+class VariableSource(object):  # pylint:disable=R0903
 
     """The source of a variable in a scope."""
 
@@ -114,7 +114,7 @@ class VariableSource(object):
     GlobalVar = 5
 
 
-class ScopeType(object):
+class ScopeType(object):  # pylint:disable=R0903
 
     """The source of a variable in a scope."""
 
@@ -124,7 +124,7 @@ class ScopeType(object):
     Global = 3
 
 
-class _Scope(object):
+class _Scope(object):  # pylint:disable=R0903
 
     """A place where variables are hoisted."""
 
@@ -287,7 +287,7 @@ def set_in_tree(abstract_syntax_tree):
     """Find variables set by scopes."""
     def scope_factory(info, parent):
         """Construct a "set variables" scope."""
-        class SetVariablesScope(_Scope):
+        class SetVariablesScope(_Scope):  # pylint:disable=R0903
 
             """Set variables in this scope."""
 
@@ -355,7 +355,7 @@ def used_in_tree(abstract_syntax_tree):
     """Find variables used in scopes."""
     def scope_factory(info, parent):
         """Construct a "set variables" scope."""
-        class UsedVariablesScope(_Scope):
+        class UsedVariablesScope(_Scope):  # pylint:disable=R0903
 
             """Used variables in this scope."""
 

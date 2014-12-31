@@ -10,7 +10,7 @@ from collections import namedtuple
 
 # Subclass instead of assignment so that we have override __new__
 # and provide a default value
-class LinterFailure(namedtuple("LinterFailure",
+class LinterFailure(namedtuple("LinterFailure",  # pylint:disable=R0903
                                "description line replacement")):
 
     """An immutable type representing a linter failure."""
