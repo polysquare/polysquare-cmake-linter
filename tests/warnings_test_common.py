@@ -13,7 +13,7 @@ from testtools.matchers import Equals as TTEqMatcher
 
 def _arg_no_mixin(num):
     """Return FindArgNoMixin for num."""
-    class FindArgNoMixin(object):
+    class FindArgNoMixin(object):  # pylint:disable=R0903
 
         """Mixin that provides generate() for find_arg_no."""
 
@@ -36,7 +36,7 @@ def _arg_no_mixin(num):
 
 def _after_arg_mixin(argument):
     """Return FindAfterArgMixin for argument."""
-    class FindAfterArgMixin(object):
+    class FindAfterArgMixin(object):  # pylint:disable=R0903
 
         """Mixin that provides generate() for find_after_arg."""
 
@@ -58,7 +58,7 @@ FUNCTIONS_SETTING_VARS = find_set_variables.all_functions(_arg_no_mixin,
 
 # Pychecker complains about the Equals matcher failing to override comparator
 # so do that here
-class Equals(TTEqMatcher):
+class Equals(TTEqMatcher):  # pylint:disable=R0903
 
     """Matcher which tests equality."""
 

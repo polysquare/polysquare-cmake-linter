@@ -13,7 +13,8 @@ from polysquarecmakelinter import ignore
 
 
 # Subclass namedtuple so that we can have a default argument for sub
-class _SetVariable(namedtuple("_SetVariable", "cmd find sub")):
+class _SetVariable(namedtuple("_SetVariable",  # pylint:disable=R0903
+                              "cmd find sub")):
 
     """_SetVariable namedtuple with default variable for sub."""
 
@@ -26,11 +27,11 @@ def _find_arg_no_factory(mixin):
     """Generate a function which returns a class with a mixin."""
     def _find_arg_no(num):
         """Return an argument finder for argument at num."""
-        class Finder(mixin, object):
+        class Finder(mixin, object):  # pylint:disable=R0903
 
             """Finder for arguments after num."""
 
-            def find(self, arguments):  # pylint:disable=no-self-use
+            def __call__(self, arguments):  # pylint:disable=no-self-use
                 """Return argument at num."""
                 try:
                     return arguments[num]
@@ -46,11 +47,11 @@ def _find_after_arg_factory(mixin):
     """Generate a function which returns a class with a mixin."""
     def _find_after_arg(argument):
         """Return an argument finder for an argument after argument."""
-        class Finder(mixin, object):
+        class Finder(mixin, object):  # pylint:disable=R0903
 
             """Finder for arguments after argument."""
 
-            def find(self, arguments):  # pylint:disable=no-self-use
+            def __call__(self, arguments):  # pylint:disable=no-self-use
                 """Return argument after argument or None if not found."""
                 try:
                     argument_index = 1
@@ -67,7 +68,7 @@ def _find_after_arg_factory(mixin):
     return _find_after_arg
 
 
-class _EmptyMixin(object):
+class _EmptyMixin(object):  # pylint:disable=R0903
 
     """An empty mixin to pass to arg_no and after_arg factories."""
 
@@ -175,7 +176,7 @@ def by_function_call(node):
                 except IndexError:
                     continue
 
-            evaluate = matcher.find.find(node.arguments)
+            evaluate = matcher.find(node.arguments)
 
             if evaluate:
                 return evaluate
