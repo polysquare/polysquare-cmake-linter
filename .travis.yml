@@ -8,18 +8,14 @@ python:
 - '3.3'
 - pypy
 install:
-- wget public-travis-scripts.polysquare.org/python-install.sh
-- wget public-travis-scripts.polysquare.org/python-lint.sh
-- wget public-travis-scripts.polysquare.org/python-tests.sh
-- wget public-travis-scripts.polysquare.org/python-coverage.sh
-- wget public-travis-scripts.polysquare.org/project-lint.sh
-- bash python-install.sh
+- curl -L public-travis-scripts.polysquare.org/python-setup-with-doc.sh | bash
 script:
-- bash project-lint.sh -d . -e py
-- bash python-lint.sh -m polysquarecmakelinter
-- bash python-tests.sh -m polysquarecmakelinter
+- export MODULE=polysquarecmakelinter
+- curl -L public-travis-scripts.polysquare.org/python-test-module.sh | bash
 after_success:
-- bash python-coverage.sh
+- curl -L public-travis-scripts.polysquare.org/python-coverage.sh | bash
+before_deploy:
+- source python-prepare-doc-deploy.sh
 deploy:
   provider: pypi
   user:
