@@ -9,7 +9,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 setup(name="polysquare-cmake-linter",
-      version="0.0.4",
+      version="0.0.5",
       description="Polysquare CMake Linter",
       long_description_markdown_filename="README.md",
       author="Sam Spilsbury",
@@ -18,14 +18,14 @@ setup(name="polysquare-cmake-linter",
       classifiers=["Development Status :: 3 - Alpha",
                    "Programming Language :: Python :: 2",
                    "Programming Language :: Python :: 2.7",
+                   "Programming Language :: Python :: 3",
                    "Programming Language :: Python :: 3.1",
                    "Programming Language :: Python :: 3.2",
                    "Programming Language :: Python :: 3.3",
                    "Programming Language :: Python :: 3.4",
                    "Intended Audience :: Developers",
                    "Topic :: Software Development :: Build Tools",
-                   "License :: OSI Approved :: MIT License",
-                   "Programming Language :: Python :: 3"],
+                   "License :: OSI Approved :: MIT License"],
       license="MIT",
       keywords="development linters",
       packages=find_packages(exclude=["tests"]),
@@ -42,4 +42,5 @@ setup(name="polysquare-cmake-linter",
           ]
       },
       test_suite="nose.collector",
-      zip_safe=True)
+      zip_safe=True,
+      include_package_data=True)
