@@ -48,8 +48,7 @@ def _find_violating_priv_uses(variable, current_scope):
                 msg = ("Referenced external private"
                        " variable {0}").format(use)
                 yield LinterFailure(msg,
-                                    variable.node.line,
-                                    variable.node.col)
+                                    variable.node.line)
 
 
 def only_use_own_priv_vars(ast):
