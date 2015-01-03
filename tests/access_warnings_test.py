@@ -68,6 +68,14 @@ class TestNoUseOtherPrivateToplevelVars(TestCase):
         self.assertTrue(run_linter_throw(script,
                                          whitelist=["access/private_var"]))
 
+    def test_pass_priv_func_used(self):
+        """Check access/private_var passes when using private func as var."""
+        script = ("function (_private_function)\n"
+                  "endfunction ()\n"
+                  "call (_private_function)\n")
+        self.assertTrue(run_linter_throw(script,
+                                         whitelist=["access/private_var"]))
+
     def test_pass_foreach_set(self):
         """Check access/private_var passes when private var set by foreach."""
         script = ("foreach (_LOOP_VAR ${LIST})\n"

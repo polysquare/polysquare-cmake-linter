@@ -36,6 +36,15 @@ class TestPrivateFunctionsMustBeUsed(TestCase):
                                          whitelist=["unused/private"]))
 
     @parameterized.expand(DEFINITION_TYPES)
+    def test_pass_priv_func_as_var(self, definition):
+        """unused/private passes if private function used as a variable."""
+        script = ("{0} (_definition ARGUMENT)\n"
+                  "end{0} ()\n"
+                  "call (_definition)\n").format(definition)
+        self.assertTrue(run_linter_throw(script,
+                                         whitelist=["unused/private"]))
+
+    @parameterized.expand(DEFINITION_TYPES)
     def test_pass_pub_func_unused(self, definition):
         """unused/private passes if public function unused."""
         script = ("{0} (definition ARGUMENT)\n"
