@@ -17,20 +17,20 @@ from polysquarecmakelinter.types import LinterFailure
 _RE_VARIABLE_USE = re.compile(r"(?<![^\${])[0-9A-Za-z_]+(?![^]}])")
 
 
-def _variable_used_in_scope(node, used_scope):
+def _variable_used_in_scope(name, exclude_node, used_scope):
     """Check if node was used in used_scope or its subscopes."""
-    def _is_candidate_use(use, node):
+    def _is_candidate_use(use, exclude_node):
         """Check if use_node is not node, but also a candidate."""
-        if use.node == node:
+        if use.node == exclude_node:
             return False
 
         used_vars_in_node = _RE_VARIABLE_USE.findall(use.node.contents)
         for used_var in used_vars_in_node:
-            if used_var == node.contents:
+            if used_var == name:
                 return True
 
     used_vs = used_scope.used_vars
-    matched_uses = [u for u in used_vs if _is_candidate_use(u, node)]
+    matched_uses = [u for u in used_vs if _is_candidate_use(u, exclude_node)]
 
     # Found use, done
     if len(matched_uses):
@@ -38,7 +38,7 @@ def _variable_used_in_scope(node, used_scope):
 
     # Didn't find use - keep going down if possible:
     for subscope in used_scope.scopes:
-        if _variable_used_in_scope(node, subscope):
+        if _variable_used_in_scope(name, exclude_node, subscope):
             return True
 
     return False
@@ -63,7 +63,9 @@ def vars_in_func_used(abstract_syntax_tree):
                 if var.node.type != WordType.Variable:
                     return
 
-                if not _variable_used_in_scope(var.node, used_scope):
+                if not _variable_used_in_scope(var.node.contents,
+                                               var.node,
+                                               used_scope):
                     msg = "Unused local variable {0}".format(var.node.contents)
                     errors.append(LinterFailure(msg, var.node.line))
 
@@ -112,8 +114,16 @@ def private_definitions_used(abstract_syntax_tree):
 
     errors = []
 
+    # There's no scoping of functions defined within other functions, so
+    # we search from the root of the tree.
+    global_scope = find_variables_in_scopes.used_in_tree(abstract_syntax_tree)
+
     for definition, info in defs.items():
-        if definition not in calls.keys():
+        not_in_function_calls = definition not in calls.keys()
+        not_used_as_variable = not _variable_used_in_scope(definition,
+                                                           None,
+                                                           global_scope)
+        if not_in_function_calls and not_used_as_variable:
             for line in info:
                 msg = "Unused private definition {0}".format(definition)
                 errors.append(LinterFailure(msg, line))
