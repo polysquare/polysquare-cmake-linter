@@ -325,13 +325,13 @@ def set_in_tree(abstract_syntax_tree):
         def _get_header_vars(header):
             """Add variables implicitly set by header function call."""
             header_variables = {
-                "foreach": [header.arguments[0]],
-                "function": header.arguments[1:],
-                "macro": header.arguments[1:]
+                "foreach": lambda h: [h.arguments[0]],
+                "function": lambda h: h.arguments[1:],
+                "macro": lambda h: h.arguments[1:]
             }
 
             try:
-                return header_variables[header.name]
+                return header_variables[header.name](header)
             except KeyError:
                 return []
 
