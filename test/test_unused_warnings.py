@@ -1,23 +1,22 @@
-# /tests/unused_warnings_test.py
+# /test/test_unused_warnings.py
 #
 # Test cases for style/* checks
 #
 # Disable no-self-use in this module as all test methods must be member
 # functions, regardless of whether self is used.
-# pylint:  disable=no-self-use
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Test cases for style/* checks."""
 
+from test import autoderef_list
+
+from test.warnings_test_common import DEFINITION_TYPES
+from test.warnings_test_common import FUNCTIONS_SETTING_VARS
+from test.warnings_test_common import LinterFailure
+from test.warnings_test_common import gen_source_line
+from test.warnings_test_common import run_linter_throw
+
 from nose_parameterized import parameterized
-
-from tests import autoderef_list
-
-from tests.warnings_test_common import DEFINITION_TYPES
-from tests.warnings_test_common import FUNCTIONS_SETTING_VARS
-from tests.warnings_test_common import LinterFailure
-from tests.warnings_test_common import gen_source_line
-from tests.warnings_test_common import run_linter_throw
 
 from testtools import (ExpectedException, TestCase)
 
@@ -53,7 +52,7 @@ class TestPrivateFunctionsMustBeUsed(TestCase):
                                          whitelist=["unused/private"]))
 
     @parameterized.expand(DEFINITION_TYPES)
-    def test_fail_priv_func_unused(self, definition):
+    def test_fail_priv_func_unused(self, definition):  # suppress(no-self-use)
         """unused/private passes if private function unused."""
         script = ("{0} (_definition ARGUMENT)\n"
                   "end{0} ()\n").format(definition)
@@ -137,7 +136,7 @@ class TestUnusedSetVariablesInBody(TestCase):
                                          whitelist=["unused/var_in_func"]))
 
     @parameterized.expand(parameters)
-    def test_fail_variable_unused(self, matcher, _):
+    def test_fail_variable_unused(self, matcher, _):  # suppress(no-self-use)
         """Check unused/var_in_func fails when var is unused."""
         call = gen_source_line(matcher)
         script = ("function (f)\n"
@@ -148,7 +147,7 @@ class TestUnusedSetVariablesInBody(TestCase):
             run_linter_throw(script, whitelist=["unused/var_in_func"])
 
     @parameterized.expand(parameters)
-    def test_fail_nested_var_unused(self, matcher, _):
+    def test_fail_nested_var_unused(self, matcher, _):  # suppress(no-self-use)
         """Check unused/var_in_func fails when nested var is unused."""
         call = gen_source_line(matcher)
         script = ("function (f)\n"
@@ -171,7 +170,7 @@ class TestUnusedPrivateToplevelVars(TestCase):
     def test_pass_variable_used(self, matcher, _):
         """Check unused/private_var passes when var is used."""
         find = matcher.find
-        xform = lambda x: "_{0}".format(x)  # pylint:disable=unnecessary-lambda
+        xform = lambda x: "_{0}".format(x)  # suppress(unnecessary-lambda,E731)
         script = ("function (f)\n"
                   "    {0} ({1})\n"
                   "    message ({2})\n"
@@ -187,7 +186,7 @@ class TestUnusedPrivateToplevelVars(TestCase):
     def test_pass_nested_use(self, matcher, _):
         """Check unused/private_var passes when var is used in nested ctx."""
         find = matcher.find
-        xform = lambda x: "_{0}".format(x)  # pylint:disable=unnecessary-lambda
+        xform = lambda x: "_{0}".format(x)  # suppress(unnecessary-lambda,E731)
         script = ("{0} ({1})\n"
                   "function (f)\n"
                   "    foreach (VAR LIST)\n"
@@ -233,10 +232,10 @@ class TestUnusedPrivateToplevelVars(TestCase):
                                          whitelist=["unused/private_var"]))
 
     @parameterized.expand(parameters)
-    def test_fail_variable_unused(self, matcher, _):
+    def test_fail_variable_unused(self, matcher, _):  # suppress(no-self-use)
         """Check unused/var_in_func fails when private var is unused."""
         find = matcher.find
-        xform = lambda x: "_{0}".format(x)  # pylint:disable=unnecessary-lambda
+        xform = lambda x: "_{0}".format(x)  # suppress(unnecessary-lambda,E731)
         script = ("{0} ({1})\n").format(matcher.cmd,
                                         find.generate(matcher.sub,
                                                       lambda x: x,

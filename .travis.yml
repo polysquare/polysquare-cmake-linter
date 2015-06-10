@@ -2,20 +2,21 @@ language: python
 sudo: false
 cache:
   directories:
-  - ~/virtualenv
+  - container
 python:
 - '2.7'
-- '3.3'
-- pypy
+- '3.4'
+- 'pypy'
 install:
-- curl -L public-travis-scripts.polysquare.org/python-setup-with-doc.sh | bash
+ - eval $(curl -LSs --retry 100 --connect-timeout 3 public-travis-scripts.polysquare.org/bootstrap.py | python /dev/stdin -d container -s setup/python/setup.py -e bash -p /dev/stdout --cmake-version ${CMAKE_VERSION})
 script:
-- export MODULE=polysquarecmakelinter
-- curl -L public-travis-scripts.polysquare.org/python-test-module.sh | bash
+ - polysquare_run check/python/check.py
+before_cache:
+ - polysquare_cleanup
 after_success:
-- curl -L public-travis-scripts.polysquare.org/python-coverage.sh | bash
+ - polysquare_run coverage/python/coverage.py
 before_deploy:
-- source python-prepare-doc-deploy.sh
+ - polysquare_run deploy/python/deploy.py
 deploy:
   provider: pypi
   user:

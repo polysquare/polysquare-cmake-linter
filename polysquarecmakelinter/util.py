@@ -2,7 +2,7 @@
 #
 # Utility functions shared amongst checks
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Utility functions shared amongst checks."""
 
 from cmakeast.ast import WordType

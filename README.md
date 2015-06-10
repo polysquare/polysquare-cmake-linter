@@ -13,7 +13,7 @@ Polysquare CMake Linter enforces the following style guide:
 ### Definitions should be namespaced - `structure/namespace` ###
 
 All definitions need to be namespaced, including private definitions. CMake
-does not complain on symbol collisions which can lead to unexpected behaviour.
+does not complain on symbol collisions which can lead to unexpected behavior.
 Prefer the following form:
 
     function (namespace_public_function ARGUMENTS)
@@ -121,7 +121,7 @@ must be quoted. For example:
 
 The reason for this is that paths which are separated by spaces may be treated
 as separate arguments when passed down the function call chain and this can
-lead to unintended behaviour. This is especially problematic on Windows, where
+lead to unintended behavior. This is especially problematic on Windows, where
 the standard directory layout frequently has directories with spaces in their
 names.
 
@@ -170,7 +170,7 @@ at a call-tree level.
 
 In the author's opinion, accessing a variable defined in a
 parent scope by a caller is generally bad practice - such
-variables should realy be passed in as arguments.
+variables should really be passed in as arguments.
 
 ## Selectively disabling warnings per-line ##
 

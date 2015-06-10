@@ -1,20 +1,16 @@
-# /tests/structure_warnings_test.py
+# /test/test_structure_warnings.py
 #
 # Test cases for structure/* checks
 #
-# Disable no-self-use in this module as all test methods must be member
-# functions, regardless of whether self is used.
-# pylint:  disable=no-self-use
-#
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Test cases for correctness/* checks."""
 
-from nose_parameterized import parameterized
+from test.warnings_test_common import DEFINITION_TYPES
+from test.warnings_test_common import LinterFailure
+from test.warnings_test_common import replacement
+from test.warnings_test_common import run_linter_throw
 
-from tests.warnings_test_common import DEFINITION_TYPES
-from tests.warnings_test_common import LinterFailure
-from tests.warnings_test_common import replacement
-from tests.warnings_test_common import run_linter_throw
+from nose_parameterized import parameterized
 
 from testtools import ExpectedException
 from testtools import TestCase
@@ -48,7 +44,7 @@ class TestFunctionsMustBeNamespaces(TestCase):
                                          whitelist=["structure/namespace"]))
 
     @parameterized.expand(DEFINITION_TYPES)
-    def test_fail_outside_namespace(self, definition):
+    def test_fail_outside_namespace(self, definition):  # suppress(no-self-use)
         """structure/namespace fails when definition outside namespace."""
         script = "{0} (not_our_call ARGUMENT)\nend{0} ()".format(definition)
         with ExpectedException(LinterFailure):
@@ -56,6 +52,7 @@ class TestFunctionsMustBeNamespaces(TestCase):
                              whitelist=["structure/namespace"])
 
     @parameterized.expand(DEFINITION_TYPES)
+    # suppress(no-self-use)
     def test_fail_priv_out_namespace(self, definition):
         """structure/namespace fails when priv definition outside namespace."""
         script = "{0} (_not_our_call ARGUMENT)\nend{0} ()".format(definition)

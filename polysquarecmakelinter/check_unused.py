@@ -2,7 +2,7 @@
 #
 # Linter checks for unused definitions
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Linter checks for Linter checks for unused definitions."""
 
 import re
@@ -20,7 +20,7 @@ _RE_VARIABLE_USE = re.compile(r"(?<![^\${])[0-9A-Za-z_]+(?![^]}])")
 def _variable_used_in_scope(name, exclude_node, used_scope):
     """Check if node was used in used_scope or its subscopes."""
     def _is_candidate_use(use, exclude_node):
-        """Check if use_node is not node, but also a candidate."""
+        """Check if use.node is not node, but also a candidate."""
         if use.node == exclude_node:
             return False
 
@@ -92,7 +92,7 @@ def private_vars_at_toplevel(abstract_syntax_tree):
             return True
 
     def _starts_with_underscore(name):
-        """Return true if variable name starts with _."""
+        """Return true if variable name starts with an underscore."""
         return name.startswith("_")
 
     variables_used = find_all.variables_used_matching(abstract_syntax_tree,

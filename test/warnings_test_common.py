@@ -1,8 +1,8 @@
-# /tests/warnings_test_common.py
+# /test/warnings_test_common.py
 #
 # Some common functionality for all of the warnings tests
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Some common functionality for all of the warnings tests."""
 
 from polysquarecmakelinter import find_set_variables
@@ -13,11 +13,11 @@ from testtools.matchers import Equals as TTEqMatcher
 
 def _arg_no_mixin(num):
     """Return FindArgNoMixin for num."""
-    class FindArgNoMixin(object):  # pylint:disable=R0903
+    class FindArgNoMixin(object):  # suppress(too-few-public-methods)
 
-        """Mixin that provides generate() for find_arg_no."""
+        """Mixin that provides generate() for finding args by number."""
 
-        def generate(self,  # pylint:disable=no-self-use
+        def generate(self,  # suppress(no-self-use)
                      sub,
                      other_transform,
                      match_transform):
@@ -36,11 +36,11 @@ def _arg_no_mixin(num):
 
 def _after_arg_mixin(argument):
     """Return FindAfterArgMixin for argument."""
-    class FindAfterArgMixin(object):  # pylint:disable=R0903
+    class FindAfterArgMixin(object):  # suppress(too-few-public-methods)
 
-        """Mixin that provides generate() for find_after_arg."""
+        """Mixin that provides generate() for finding args after args."""
 
-        def generate(self,  # pylint:disable=no-self-use
+        def generate(self,  # suppress(no-self-use)
                      sub,
                      other_transform,
                      match_transform):
@@ -58,7 +58,7 @@ FUNCTIONS_SETTING_VARS = find_set_variables.all_functions(_arg_no_mixin,
 
 # Pychecker complains about the Equals matcher failing to override comparator
 # so do that here
-class Equals(TTEqMatcher):  # pylint:disable=R0903
+class Equals(TTEqMatcher):  # suppress(R0903)
 
     """Matcher which tests equality."""
 

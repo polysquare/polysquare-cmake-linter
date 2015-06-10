@@ -2,7 +2,7 @@
 #
 # Wrapper functions to ignore certain arguments in callbacks
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Wrapper functions to ignore certain arguments in callbacks."""
 
 

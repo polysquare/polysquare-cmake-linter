@@ -1,10 +1,13 @@
-# /tests/find_variable_scopes_test.py
+# /test/test_find_variable_scopes.py
 #
 # Tests that we're able to find variables inside the scopes that we expect
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Test that we're able to find variables inside the scopes that we expect."""
 
+from test.warnings_test_common import Equals
+from test.warnings_test_common import FUNCTIONS_SETTING_VARS
+from test.warnings_test_common import gen_source_line
 
 from cmakeast import ast
 
@@ -13,10 +16,6 @@ from nose_parameterized import parameterized
 from polysquarecmakelinter import find_variables_in_scopes
 
 from polysquarecmakelinter.find_variables_in_scopes import VariableSource
-
-from tests.warnings_test_common import Equals
-from tests.warnings_test_common import FUNCTIONS_SETTING_VARS
-from tests.warnings_test_common import gen_source_line
 
 from testtools import TestCase
 

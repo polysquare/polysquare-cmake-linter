@@ -1,21 +1,17 @@
-# /tests/correctness_warnings_test.py
+# /test/test_correctness_warnings.py
 #
 # Test cases for correctness/* checks
 #
-# Disable no-self-use in this module as all test methods must be member
-# functions, regardless of whether self is used.
-# pylint:  disable=no-self-use
-#
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Test cases for correctness/* checks."""
+
+from test.warnings_test_common import LinterFailure
+from test.warnings_test_common import replacement
+from test.warnings_test_common import run_linter_throw
 
 from nose_parameterized import parameterized
 
 from polysquarecmakelinter import check_correctness
-
-from tests.warnings_test_common import LinterFailure
-from tests.warnings_test_common import replacement
-from tests.warnings_test_common import run_linter_throw
 
 from testtools import ExpectedException
 from testtools import TestCase
@@ -45,14 +41,13 @@ class TestQuoteVariablesWhichMayHaveSpaces(TestCase):
     """Test case for ensuring that certain variables are always quoted."""
 
     @parameterized.expand(QUOTE_ONLY_TEST_VARIABLES)
-    def test_fail_deref_certain_vars(self,
-                                     bad_deref):
+    def test_fail_deref_certain_vars(self, bad_deref):  # suppress(no-self-use)
         """Test correctness/quotes fails if dereffing some variable names."""
         with ExpectedException(LinterFailure):
             run_linter_throw("call ({0})".format(bad_deref),
                              whitelist=["correctness/quotes"])
 
-    def test_fail_when_using_slashes(self):
+    def test_fail_when_using_slashes(self):  # suppress(no-self-use)
         """Test correctness/quotes fails when using raw unquoted path."""
         with ExpectedException(LinterFailure):
             run_linter_throw("call (abc/def)\n",
@@ -79,7 +74,7 @@ class TestQuoteVariablesWhichMayHaveSpaces(TestCase):
     def test_replace_deref_certain_vars(self, bad_deref):
         """Test correctness/quotes replaces variable derefs with quotes."""
         def get_replacement():
-            """Get the replacement for the dereffed path."""
+            """Get the replacement for the dereferenced path."""
             run_linter_throw("call ({0})".format(bad_deref),
                              whitelist=["correctness/quotes"])
 

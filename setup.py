@@ -2,14 +2,14 @@
 #
 # Installation and setup script for polysquare-cmake-linter
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Installation and setup script for polysquare-cmake-linter."""
 
 from setuptools import find_packages
 from setuptools import setup
 
 setup(name="polysquare-cmake-linter",
-      version="0.0.6",
+      version="0.0.7",
       description="Polysquare CMake Linter",
       long_description_markdown_filename="README.md",
       author="Sam Spilsbury",
@@ -31,16 +31,22 @@ setup(name="polysquare-cmake-linter",
       packages=find_packages(exclude=["tests"]),
       install_requires=["cmakeast>=0.0.7"],
       extras_require={
-          "test": ["coverage",
-                   "nose",
-                   "nose-parameterized",
-                   "testtools"]
+          "green": ["coverage",
+                    "testtools",
+                    "nose",
+                    "nose-parameterized>=0.4.0",
+                    "setuptools-green"],
+          "polysquarelint": ["polysquare-setuptools-lint"]
       },
       entry_points={
           "console_scripts": [
               "polysquare-cmake-linter=polysquarecmakelinter.linter:main"
           ]
       },
+      dependency_links=[
+          ("https://github.com/smspillaz/nose-parameterized/tarball/"
+           "detailed-docs#egg=nose-parameterized-0.4.0"),
+      ],
       test_suite="nose.collector",
       zip_safe=True,
       include_package_data=True)

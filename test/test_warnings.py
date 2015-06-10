@@ -1,8 +1,8 @@
-# /tests/warnings_test.py
+# /test/test_warnings.py
 #
 # Test cases for each warning in polysquare-cmake-linter
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Test the linter to ensure that each lint use-case triggers warnings."""
 
 from polysquarecmakelinter import linter

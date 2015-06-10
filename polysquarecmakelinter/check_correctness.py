@@ -1,9 +1,9 @@
 # /polysquarecmakelinter/check_correctness.py
 #
-# Linter checks for potentially buggy behaviour
+# Linter checks for potentially buggy behavior
 #
-# See LICENCE.md for Copyright information
-"""Linter checks for potentially buggy behaviour."""
+# See /LICENCE.md for Copyright information
+"""Linter checks for potentially buggy behavior."""
 
 import re
 

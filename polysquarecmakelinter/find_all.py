@@ -2,7 +2,7 @@
 #
 # Details to find certain occurrences of nodes
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Detail to find certain occurrences of nodes."""
 
 import re
@@ -29,7 +29,7 @@ def calls(abstract_syntax_tree, track_call):
     call_lines = {}
 
     def _call_handler(name, node, depth):
-        """Viit all calls in this module."""
+        """Visit all calls in this module."""
         assert name == "FunctionCall"
 
         del depth

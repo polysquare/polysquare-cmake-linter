@@ -2,7 +2,7 @@
 #
 # Details to find set variables in a module
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Detail to find set variables in a module."""
 
 from collections import namedtuple
@@ -13,7 +13,9 @@ from polysquarecmakelinter import ignore
 
 
 # Subclass namedtuple so that we can have a default argument for sub
-class _SetVariable(namedtuple("_SetVariable",  # pylint:disable=R0903
+#
+# suppress(too-few-public-methods)
+class _SetVariable(namedtuple("_SetVariable",
                               "cmd find sub")):
 
     """_SetVariable namedtuple with default variable for sub."""
@@ -27,11 +29,11 @@ def _find_arg_no_factory(mixin):
     """Generate a function which returns a class with a mixin."""
     def _find_arg_no(num):
         """Return an argument finder for argument at num."""
-        class Finder(mixin, object):  # pylint:disable=R0903
+        class Finder(mixin, object):  # suppress(too-few-public-methods)
 
             """Finder for arguments after num."""
 
-            def __call__(self, arguments):  # pylint:disable=no-self-use
+            def __call__(self, arguments):  # suppress(no-self-use)
                 """Return argument at num."""
                 try:
                     return arguments[num]
@@ -47,11 +49,11 @@ def _find_after_arg_factory(mixin):
     """Generate a function which returns a class with a mixin."""
     def _find_after_arg(argument):
         """Return an argument finder for an argument after argument."""
-        class Finder(mixin, object):  # pylint:disable=R0903
+        class Finder(mixin, object):  # suppress(too-few-public-methods)
 
             """Finder for arguments after argument."""
 
-            def __call__(self, arguments):  # pylint:disable=no-self-use
+            def __call__(self, arguments):  # suppress(no-self-use)
                 """Return argument after argument or None if not found."""
                 try:
                     argument_index = 1
@@ -68,18 +70,18 @@ def _find_after_arg_factory(mixin):
     return _find_after_arg
 
 
-class _EmptyMixin(object):  # pylint:disable=R0903
+class _EmptyMixin(object):  # suppress(too-few-public-methods)
 
-    """An empty mixin to pass to arg_no and after_arg factories."""
+    """An empty mixin to pass to argument factories."""
 
 
 def all_functions(arg_no_mixin_generator=lambda n: _EmptyMixin,
                   after_arg_mixin_generator=lambda a: _EmptyMixin):
     """Return a list of _SetVariable for all functions setting variables.
 
-    Use arg_no_mixin and after_arg_mixin to customize the instance of
-    the find attribute attached to each _SetVariable, eg, to add your
-    own functions.
+    Use arg_no_mixin_generator and after_arg_mixin_generator to customize the
+    instance of the find attribute attached to each _SetVariable, eg, to add
+    your own functions.
     """
     def _find_arg_no(num):
         """Wrap _find_arg_no_factory and adds mixin."""
@@ -168,9 +170,9 @@ def by_function_call(node):
             # Note: pylint trips up on the generated code and believes that
             # matcher has no attribute named "sub". This is incorrect, so
             # a warning is suppressed here.
-            if matcher.sub is not None:  # pylint:disable=no-member
+            if matcher.sub is not None:  # suppress(no-member)
                 try:
-                    if (matcher.sub !=  # pylint:disable=no-member
+                    if (matcher.sub !=  # suppress(no-member)
                             node.arguments[0].contents):
                         continue
                 except IndexError:

@@ -1,9 +1,9 @@
-# /tests/acceptance_test.py
+# /test/test_acceptance.py
 #
 # Test cases for usage of polysquarecmakelinter.main() and command line
 # parsing.
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Test cases for usage of polysquarecmakelinter.main()."""
 
 import os
@@ -49,7 +49,7 @@ class TestLinterAcceptance(TestCase):
     def __init__(self, *args, **kwargs):
         """"Initialize class variables."""
         cls = TestLinterAcceptance
-        super(cls, self).__init__(*args,  # pylint:disable=R0903
+        super(cls, self).__init__(*args,  # suppress(R0903
                                   **kwargs)
         self._temporary_file = None
 
