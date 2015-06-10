@@ -8,9 +8,10 @@
 from test.warnings_test_common import DEFINITION_TYPES
 from test.warnings_test_common import FUNCTIONS_SETTING_VARS
 from test.warnings_test_common import LinterFailure
+from test.warnings_test_common import format_with_command
 from test.warnings_test_common import run_linter_throw
 
-from nose_parameterized import parameterized
+from nose_parameterized import param, parameterized
 
 from testtools import (ExpectedException, TestCase)
 
@@ -40,12 +41,15 @@ class TestPrivateFunctionsUsedMustBeDefinedInThisModule(TestCase):
             run_linter_throw("_definition (ARGUMENT)\n",
                              whitelist=["access/other_private"])
 
+# suppress(unnecessary-lambda)
+_PRIVATE_VAR_SET_FORMAT = format_with_command(lambda x: "_{}".format(x))
+
 
 class TestNoUseOtherPrivateToplevelVars(TestCase):
 
     """Check that private variables not set by us are not used."""
 
-    parameters = [(m, None) for m in FUNCTIONS_SETTING_VARS]
+    parameters = [param(m) for m in FUNCTIONS_SETTING_VARS]
 
     def test_pass_pub_var_used(self):
         """Check access/private_var passes if undefined public var is used."""
@@ -53,9 +57,10 @@ class TestNoUseOtherPrivateToplevelVars(TestCase):
         self.assertTrue(run_linter_throw(script,
                                          whitelist=["access/private_var"]))
 
-    @parameterized.expand(parameters)
-    def test_pass_variable_used(self, matcher, _):
-        """Check access/private_var passes when private var is set and used."""
+    @parameterized.expand(parameters,
+                          testcase_func_doc=_PRIVATE_VAR_SET_FORMAT)
+    def test_pass_variable_used(self, matcher):
+        """Check access/private_var passes when priv var set by {}."""
         # suppress(unnecessary-lambda,E731)
         xform = lambda x: "_{0}".format(x)
         private_var = matcher.find.generate(matcher.sub,

@@ -117,6 +117,35 @@ def gen_source_line(matcher, match_transform=None, other_transform=None):
     line += ")\n"
     return line
 
+
+def format_with_command(var_xform=None,
+                        other_xform=None):
+    """Return function formatting docstring with 'set variable' tuple.
+
+    Specify var_xform to transform the name of the variable
+    which is set by the command.
+    """
+    def formatter(func, _, params):
+        """Return formatted docstring with command setting variable."""
+        source_line = gen_source_line(params.args[0],
+                                      match_transform=var_xform,
+                                      other_transform=other_xform)
+        return func.__doc__.format(source_line)
+
+    return formatter
+
+
+def format_with_args(*args):
+    """Return a function that formats a docstring."""
+    def formatter(func, _, params):
+        """Return formatted docstring with argument numbers in args."""
+        pa = params.args
+        format_args = [pa[i] for i in range(0, len(pa)) if i in args]
+
+        return func.__doc__.format(*format_args)
+
+    return formatter
+
 DEFINITION_TYPES = [
     "function",
     "macro"

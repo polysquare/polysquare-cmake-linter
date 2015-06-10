@@ -8,11 +8,13 @@
 from test.warnings_test_common import DEFINITION_TYPES
 from test.warnings_test_common import FUNCTIONS_SETTING_VARS
 from test.warnings_test_common import LinterFailure
+from test.warnings_test_common import format_with_args
+from test.warnings_test_common import format_with_command
 from test.warnings_test_common import gen_source_line
 from test.warnings_test_common import replacement
 from test.warnings_test_common import run_linter_throw
 
-from nose_parameterized import parameterized
+from nose_parameterized import param, parameterized
 
 from testtools import ExpectedException
 from testtools import TestCase
@@ -76,7 +78,7 @@ class TestSpaceBeforeFunctionCallWarnings(TestCase):
         Test fails where there is more than one space between a function name
         and a call, like so
 
-        function_name  ()
+        function_name ()
         """
         with ExpectedException(LinterFailure):
             run_linter_throw("function_call  ()\n",
@@ -232,15 +234,26 @@ class TestUppercaseDefinitionArguments(TestCase):
                          (1, "{0} (name LOWERCASE)\n".format(defin)))
 
 
+_FORMAT_WITH_DEREFFED_VAR = format_with_command(lambda x: "${" + x + "}")
+_FORMAT_WITH_LOWERCASE_VAR = format_with_command(lambda x: x.lower())
+_FORMAT_WITH_OTHER_QUOTES = format_with_command(other_xform=lambda x: ("\"" +
+                                                                       x +
+                                                                       "\""))
+_FORMAT_QUOTES_AND_LOWER = format_with_command(var_xform=lambda x: x.lower(),
+                                               other_xform=lambda x: ("\"" +
+                                                                      x +
+                                                                      "\""))
+
+
 class TestUppercaseVariableNamesOnly(TestCase):
 
     """Test case for uppercase variable names only."""
 
-    parameters = [(m, None) for m in FUNCTIONS_SETTING_VARS]
+    parameters = [param(m) for m in FUNCTIONS_SETTING_VARS]
 
-    @parameterized.expand(parameters)
-    def test_pass_no_var_set(self, matcher, dummy):
-        """Check that style/set_var_case passes.
+    @parameterized.expand(parameters, testcase_func_doc=format_with_args(0))
+    def test_pass_no_var_set(self, matcher):
+        """Check that style/set_var_case passes with {0.cmd}.
 
         Where no variable is actually set, then there is no linter failure
         """
@@ -249,9 +262,10 @@ class TestUppercaseVariableNamesOnly(TestCase):
                                   whitelist=["style/set_var_case"])
         self.assertTrue(result)
 
-    @parameterized.expand(parameters)
-    def test_pass_no_quotes(self, matcher, dummy):
-        """Check that style/set_var_case passes.
+    @parameterized.expand(parameters,
+                          testcase_func_doc=format_with_command())
+    def test_pass_no_quotes(self, matcher):
+        """Check that style/set_var_case passes with {}.
 
         Variables set by another CMake command should only be uppercase
         """
@@ -259,9 +273,10 @@ class TestUppercaseVariableNamesOnly(TestCase):
                                   whitelist=["style/set_var_case"])
         self.assertTrue(result)
 
-    @parameterized.expand(parameters)
-    def test_pass_inside_deref(self, matcher, dummy):
-        """Check that style/set_var_case passes when var in deref.
+    @parameterized.expand(parameters,
+                          testcase_func_doc=_FORMAT_WITH_DEREFFED_VAR)
+    def test_pass_inside_deref(self, matcher):
+        """Check that style/set_var_case passes when var in deref, like {}.
 
         Pass if variable is uppercase and inside of a deref, because variable
         dereferences are not sink variables.
@@ -272,9 +287,10 @@ class TestUppercaseVariableNamesOnly(TestCase):
                                   whitelist=["style/set_var_case"])
         self.assertTrue(result)
 
-    @parameterized.expand(parameters)
-    def test_pass_other_quotes(self, matcher, dummy):
-        """Check that style/set_var_case passes with other args quoted."""
+    @parameterized.expand(parameters,
+                          testcase_func_doc=_FORMAT_WITH_OTHER_QUOTES)
+    def test_pass_other_quotes(self, matcher):
+        """Check that style/set_var_case pass with other args quoted in {}."""
         quote = "\"{0}\""
         xform = lambda x: quote.format(x)  # suppress(unnecessary-lambda,E731)
         line = gen_source_line(matcher,
@@ -283,18 +299,20 @@ class TestUppercaseVariableNamesOnly(TestCase):
                                   whitelist=["style/set_var_case"])
         self.assertTrue(result)
 
-    @parameterized.expand(parameters)
-    def test_fail_no_quotes(self, matcher, _):  # suppress(no-self-use)
-        """Check that style/set_var_case fails."""
+    @parameterized.expand(parameters,
+                          testcase_func_doc=_FORMAT_WITH_LOWERCASE_VAR)
+    def test_fail_no_quotes(self, matcher):  # suppress(no-self-use)
+        """Check that style/set_var_case fails with {}, because lowercase."""
         line = gen_source_line(matcher,
                                match_transform=lambda x: x.lower())
         with ExpectedException(LinterFailure):
             run_linter_throw(line,
                              whitelist=["style/set_var_case"])
 
-    @parameterized.expand(parameters)
-    def test_fail_other_quotes(self, matcher, _):  # suppress(no-self-use)
-        """Check that style/set_var_case fails with other args quoted."""
+    @parameterized.expand(parameters,
+                          testcase_func_doc=_FORMAT_QUOTES_AND_LOWER)
+    def test_fail_other_quotes(self, matcher):  # suppress(no-self-use)
+        """Check that style/set_var_case fails with other args quoted in {}."""
         quote = "\"{0}\""
         xform = lambda x: quote.format(x)  # suppress(unnecessary-lambda,E731)
         line = gen_source_line(matcher,
@@ -304,9 +322,10 @@ class TestUppercaseVariableNamesOnly(TestCase):
             run_linter_throw(line,
                              whitelist=["style/set_var_case"])
 
-    @parameterized.expand(parameters)
-    def test_replace_no_quotes(self, matcher, dummy):
-        """Check that style/set_var_case replace with uppercase.
+    @parameterized.expand(parameters,
+                          testcase_func_doc=_FORMAT_WITH_LOWERCASE_VAR)
+    def test_replace_no_quotes(self, matcher):
+        """Check that style/set_var_case replaces {} with uppercase var.
 
         Replacement should have uppercase matched argument
         """
