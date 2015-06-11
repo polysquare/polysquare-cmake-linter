@@ -1,22 +1,22 @@
-# /tests/find_variable_scopes_test.py
+# /test/test_find_variable_scopes.py
 #
 # Tests that we're able to find variables inside the scopes that we expect
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Test that we're able to find variables inside the scopes that we expect."""
 
+from test.warnings_test_common import Equals
+from test.warnings_test_common import FUNCTIONS_SETTING_VARS
+from test.warnings_test_common import format_with_command
+from test.warnings_test_common import gen_source_line
 
 from cmakeast import ast
 
-from nose_parameterized import parameterized
+from nose_parameterized import param, parameterized
 
 from polysquarecmakelinter import find_variables_in_scopes
 
 from polysquarecmakelinter.find_variables_in_scopes import VariableSource
-
-from tests.warnings_test_common import Equals
-from tests.warnings_test_common import FUNCTIONS_SETTING_VARS
-from tests.warnings_test_common import gen_source_line
 
 from testtools import TestCase
 
@@ -30,24 +30,20 @@ class TestFindVariablesInScopes(TestCase):
 
     """Test fixture for the in_tree function."""
 
-    param = [(m, None) for m in FUNCTIONS_SETTING_VARS]
+    params = [param(m) for m in FUNCTIONS_SETTING_VARS]
 
-    @parameterized.expand(param)
-    def test_global_scope(self, matcher, unused):
-        """Test setting and finding vars at global scope."""
-        del unused
-
+    @parameterized.expand(params, testcase_func_doc=format_with_command())
+    def test_global_scope(self, matcher):
+        """Test setting and finding vars with {} at global scope."""
         script = "{0}".format(gen_source_line(matcher))
         global_scope = find_variables_in_scopes.set_in_tree(ast.parse(script))
 
         self.assertThat(global_scope.set_vars[0].node,
                         MatchesStructure(contents=Equals("VALUE")))
 
-    @parameterized.expand(param)
-    def test_in_func_scope(self, matcher, unused):
-        """Test setting and finding vars at global scope."""
-        del unused
-
+    @parameterized.expand(params, testcase_func_doc=format_with_command())
+    def test_in_func_scope(self, matcher):
+        """Test setting and finding vars with {} in function scope."""
         script = ("function (foo)\n"
                   "    {0}\n"
                   "endfunction ()\n").format(gen_source_line(matcher))
@@ -56,11 +52,9 @@ class TestFindVariablesInScopes(TestCase):
         self.assertThat(global_scope.scopes[0].set_vars[0].node,
                         MatchesStructure(contents=Equals("VALUE")))
 
-    @parameterized.expand(param)
-    def test_if_in_func_scope(self, matcher, unused):
-        """Test that setting a variable in an if block propagates to func."""
-        del unused
-
+    @parameterized.expand(params, testcase_func_doc=format_with_command())
+    def test_if_in_func_scope(self, matcher):
+        """Test that using {} in an if block propagates variable to func."""
         script = ("function (foo)\n"
                   "    if (CONDITION)\n"
                   "        {0}\n"
@@ -70,11 +64,9 @@ class TestFindVariablesInScopes(TestCase):
         self.assertThat(global_scope.scopes[0].set_vars[0].node,
                         MatchesStructure(contents=Equals("VALUE")))
 
-    @parameterized.expand(param)
-    def test_elseif_in_func_scope(self, matcher, unused):
-        """Test that setting a variable in an elseif statement propagates."""
-        del unused
-
+    @parameterized.expand(params, testcase_func_doc=format_with_command())
+    def test_elseif_in_func_scope(self, matcher):
+        """Test that using {} in an elseif statement propagates variable."""
         script = ("function (foo)\n"
                   "    if (CONDITION)\n"
                   "    elseif (CONDITION)\n"
@@ -85,11 +77,9 @@ class TestFindVariablesInScopes(TestCase):
         self.assertThat(global_scope.scopes[0].set_vars[0].node,
                         MatchesStructure(contents=Equals("VALUE")))
 
-    @parameterized.expand(param)
-    def test_else_in_func_scope(self, matcher, unused):
-        """Test that setting a variable in an else statement propagates."""
-        del unused
-
+    @parameterized.expand(params, testcase_func_doc=format_with_command())
+    def test_else_in_func_scope(self, matcher):
+        """Test that using {} in an else statement propagates variable."""
         script = ("function (foo)\n"
                   "    if (CONDITION)\n"
                   "    else (CONDITION)\n"
@@ -100,11 +90,9 @@ class TestFindVariablesInScopes(TestCase):
         self.assertThat(global_scope.scopes[0].set_vars[0].node,
                         MatchesStructure(contents=Equals("VALUE")))
 
-    @parameterized.expand(param)
-    def test_while_in_func(self, matcher, unused):
-        """Test that setting a variable in a while block propagates to func."""
-        del unused
-
+    @parameterized.expand(params, testcase_func_doc=format_with_command())
+    def test_while_in_func(self, matcher):
+        """Test that using {} in a while block propagates variable to func."""
         script = ("function (foo)\n"
                   "    while (CONDITION)\n"
                   "        {0}\n"
@@ -114,11 +102,9 @@ class TestFindVariablesInScopes(TestCase):
         self.assertThat(global_scope.scopes[0].set_vars[0].node,
                         MatchesStructure(contents=Equals("VALUE")))
 
-    @parameterized.expand(param)
-    def test_foreach_in_func(self, matcher, unused):
-        """Test that setting a variable in an foreach statements propagates."""
-        del unused
-
+    @parameterized.expand(params, testcase_func_doc=format_with_command())
+    def test_foreach_in_func(self, matcher):
+        """Test that using {} in an foreach statements propagates variable."""
         script = ("function (foo)\n"
                   "    foreach (VAR LISTVAR)\n"
                   "        {0}\n"

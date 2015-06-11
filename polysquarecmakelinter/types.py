@@ -2,7 +2,7 @@
 #
 # Some types that are shared amongst linters and checks
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Some types that are shared amongst linters and checks."""
 
 from collections import namedtuple
@@ -10,7 +10,9 @@ from collections import namedtuple
 
 # Subclass instead of assignment so that we have override __new__
 # and provide a default value
-class LinterFailure(namedtuple("LinterFailure",  # pylint:disable=R0903
+#
+# suppress(too-few-public-methods)
+class LinterFailure(namedtuple("LinterFailure",
                                "description line replacement")):
 
     """An immutable type representing a linter failure."""

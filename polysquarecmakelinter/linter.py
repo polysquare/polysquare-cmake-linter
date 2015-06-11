@@ -2,8 +2,8 @@
 #
 # Entry point for linter.
 #
-# See LICENCE.md for Copyright information
-""" Main module for linter."""
+# See /LICENCE.md for Copyright information
+"""Main module for linter."""
 
 import argparse
 
@@ -35,7 +35,7 @@ def should_ignore(line, warning):
                 return True
             elif line[match.end():match.end() + len(warning)] == warning:
                 return True
-        except IndexError:  # pylint:disable=W0704
+        except IndexError:  # suppress(pointless-except)
             pass
 
     return False
@@ -104,7 +104,8 @@ def lint(contents,
     return linter_errors
 
 
-class ShowAvailableChecksAction(argparse.Action):  # pylint:disable=R0903
+# suppress(too-few-public-methods)
+class ShowAvailableChecksAction(argparse.Action):
 
     """If --checks is encountered, just show available checks and exit."""
 
@@ -200,7 +201,7 @@ def main(arguments=None):
             if result.indent is not None:
                 kwargs["indent"] = result.indent[0]
 
-            errors = lint(file_contents,  # pylint:disable=star-args
+            errors = lint(file_contents,  # suppress(star-args)
                           result.whitelist,
                           result.blacklist,
                           **kwargs)

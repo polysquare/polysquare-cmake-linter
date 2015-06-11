@@ -17,8 +17,8 @@
 # B called from function B are not visible in function B, except if function
 # B was defined inside function A. The same rules apply for macros.
 #
-# In the author's opinion, checks that rely on CMake's own scoping behaviour
-# are really enforcing bad behaviour - implicit variable visibility is bad
+# In the author's opinion, checks that rely on CMake's own scoping behavior
+# are really enforcing bad behavior - implicit variable visibility is bad
 # for maintainability and shouldn't be relied on in any case.
 #
 # Global Scope:
@@ -45,7 +45,7 @@
 #     my_macro ()
 # endfunction ()
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Find all set variables and order by scope."""
 
 import re
@@ -102,7 +102,7 @@ IF_KEYWORDS = [
 
 # We use a class with constant variables here so that we can get int->int
 # comparison. Comparing enums is slow because of the type lookup.
-class VariableSource(object):  # pylint:disable=R0903
+class VariableSource(object):  # suppress(too-few-public-methods)
 
     """The source of a variable in a scope."""
 
@@ -114,7 +114,7 @@ class VariableSource(object):  # pylint:disable=R0903
     GlobalVar = 5
 
 
-class ScopeType(object):  # pylint:disable=R0903
+class ScopeType(object):  # suppress(too-few-public-methods)
 
     """The source of a variable in a scope."""
 
@@ -124,7 +124,7 @@ class ScopeType(object):  # pylint:disable=R0903
     Global = 3
 
 
-class _Scope(object):  # pylint:disable=R0903
+class _Scope(object):  # suppress(too-few-public-methods)
 
     """A place where variables are hoisted."""
 
@@ -269,7 +269,7 @@ def _scope_to_bind_var_to(function_call, enclosing):
             elif function_call.arguments[2].contents == "CACHE":
                 while enclosing.parent is not None:
                     enclosing = enclosing.parent
-        except IndexError:  # pylint:disable=W0704
+        except IndexError:  # suppress(pointless-except)
             pass
 
     # Another special case for set_property with GLOBAL as the
@@ -287,12 +287,12 @@ def set_in_tree(abstract_syntax_tree):
     """Find variables set by scopes."""
     def scope_factory(info, parent):
         """Construct a "set variables" scope."""
-        class SetVariablesScope(_Scope):  # pylint:disable=R0903
+        class SetVariablesScope(_Scope):  # suppress(too-few-public-methods)
 
             """Set variables in this scope."""
 
             def __init__(self, info, parent):
-                """Initialze set_vars member."""
+                """Initialize set_vars member."""
                 super(SetVariablesScope, self).__init__(info, parent)
                 self.set_vars = []
 
@@ -355,12 +355,12 @@ def used_in_tree(abstract_syntax_tree):
     """Find variables used in scopes."""
     def scope_factory(info, parent):
         """Construct a "set variables" scope."""
-        class UsedVariablesScope(_Scope):  # pylint:disable=R0903
+        class UsedVariablesScope(_Scope):  # suppress(too-few-public-methods)
 
             """Used variables in this scope."""
 
             def __init__(self, info, parent):
-                """Initialze used_vars member."""
+                """Initialize used_vars member."""
                 super(UsedVariablesScope, self).__init__(info, parent)
                 self.used_vars = []
 

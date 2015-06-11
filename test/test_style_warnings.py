@@ -1,22 +1,20 @@
-# /tests/style_warnings_test.py
+# /test/test_style_warnings.py
 #
 # Test cases for style/* checks
 #
-# Disable no-self-use in this module as all test methods must be member
-# functions, regardless of whether self is used.
-# pylint:  disable=no-self-use
-#
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Test cases for style/* checks."""
 
-from nose_parameterized import parameterized
+from test.warnings_test_common import DEFINITION_TYPES
+from test.warnings_test_common import FUNCTIONS_SETTING_VARS
+from test.warnings_test_common import LinterFailure
+from test.warnings_test_common import format_with_args
+from test.warnings_test_common import format_with_command
+from test.warnings_test_common import gen_source_line
+from test.warnings_test_common import replacement
+from test.warnings_test_common import run_linter_throw
 
-from tests.warnings_test_common import DEFINITION_TYPES
-from tests.warnings_test_common import FUNCTIONS_SETTING_VARS
-from tests.warnings_test_common import LinterFailure
-from tests.warnings_test_common import gen_source_line
-from tests.warnings_test_common import replacement
-from tests.warnings_test_common import run_linter_throw
+from nose_parameterized import param, parameterized
 
 from testtools import ExpectedException
 from testtools import TestCase
@@ -62,7 +60,7 @@ class TestSpaceBeforeFunctionCallWarnings(TestCase):
                                   whitelist=["style/space_before_func"])
         self.assertTrue(result)
 
-    def test_lint_fail_nospace(self):
+    def test_lint_fail_nospace(self):   # suppress(no-self-use)
         """Check that style/space_before_func fails.
 
         Test fails where there is no space between a function name and a
@@ -74,13 +72,13 @@ class TestSpaceBeforeFunctionCallWarnings(TestCase):
             run_linter_throw("function_call()\n",
                              whitelist=["style/space_before_func"])
 
-    def test_lint_fail_excessive_space(self):
+    def test_lint_fail_excessive_space(self):  # suppress(no-self-use)
         """Check that style/space_before_func fails.
 
         Test fails where there is more than one space between a function name
         and a call, like so
 
-        function_name  ()
+        function_name ()
         """
         with ExpectedException(LinterFailure):
             run_linter_throw("function_call  ()\n",
@@ -119,7 +117,7 @@ class TestFunctionsMustbeLowercaseOnly(TestCase):
                                   whitelist=["style/lowercase_func"])
         self.assertTrue(result)
 
-    def test_fail_uppercase_call(self):
+    def test_fail_uppercase_call(self):  # suppress(no-self-use)
         """style/lowercase fails when calling uppercase func."""
         with ExpectedException(LinterFailure):
             run_linter_throw("UPPERCASE_FUNC (ARGUMENT)\n",
@@ -146,7 +144,7 @@ class TestFunctionsMustbeLowercaseOnly(TestCase):
                                   whitelist=["style/lowercase_func"])
         self.assertTrue(result)
 
-    def test_fail_uppercase_func_def(self):
+    def test_fail_uppercase_func_def(self):  # suppress(no-self-use)
         """style/lowercase fails when defining uppercase func."""
         with ExpectedException(LinterFailure):
             run_linter_throw("function (UPPERCASE_FUNC) endfunction ()\n",
@@ -160,7 +158,7 @@ class TestFunctionsMustbeLowercaseOnly(TestCase):
         expected_repl = "function ({0}) endfunction ()\n".format(lower_name)
 
         def get_replacement():
-            """Replace upperacse function call."""
+            """Replace uppercase function call."""
             run_linter_throw(error,
                              whitelist=["style/lowercase_func"])
 
@@ -174,7 +172,7 @@ class TestFunctionsMustbeLowercaseOnly(TestCase):
                                   whitelist=["style/lowercase_func"])
         self.assertTrue(result)
 
-    def test_fail_uppercase_macro(self):
+    def test_fail_uppercase_macro(self):  # suppress(no-self-use)
         """style/lowercase fails when defining uppercase macro."""
         with ExpectedException(LinterFailure):
             run_linter_throw("macro (UPPERCASE_MACRO) endmacro ()\n",
@@ -216,7 +214,7 @@ class TestUppercaseDefinitionArguments(TestCase):
                                          whitelist=["style/uppercase_args"]))
 
     @parameterized.expand(DEFINITION_TYPES)
-    def test_fail_lowercase_args(self, defin):
+    def test_fail_lowercase_args(self, defin):  # suppress(no-self-use)
         """Check style/uppercase_args passes where args are lowercase."""
         script = "{0} (definition_name lowercase)\nend{0} ()\n".format(defin)
         with ExpectedException(LinterFailure):
@@ -236,15 +234,26 @@ class TestUppercaseDefinitionArguments(TestCase):
                          (1, "{0} (name LOWERCASE)\n".format(defin)))
 
 
+_FORMAT_WITH_DEREFFED_VAR = format_with_command(lambda x: "${" + x + "}")
+_FORMAT_WITH_LOWERCASE_VAR = format_with_command(lambda x: x.lower())
+_FORMAT_WITH_OTHER_QUOTES = format_with_command(other_xform=lambda x: ("\"" +
+                                                                       x +
+                                                                       "\""))
+_FORMAT_QUOTES_AND_LOWER = format_with_command(var_xform=lambda x: x.lower(),
+                                               other_xform=lambda x: ("\"" +
+                                                                      x +
+                                                                      "\""))
+
+
 class TestUppercaseVariableNamesOnly(TestCase):
 
     """Test case for uppercase variable names only."""
 
-    parameters = [(m, None) for m in FUNCTIONS_SETTING_VARS]
+    parameters = [param(m) for m in FUNCTIONS_SETTING_VARS]
 
-    @parameterized.expand(parameters)
-    def test_pass_no_var_set(self, matcher, dummy):
-        """Check that style/set_var_case passes.
+    @parameterized.expand(parameters, testcase_func_doc=format_with_args(0))
+    def test_pass_no_var_set(self, matcher):
+        """Check that style/set_var_case passes with {0.cmd}.
 
         Where no variable is actually set, then there is no linter failure
         """
@@ -253,9 +262,10 @@ class TestUppercaseVariableNamesOnly(TestCase):
                                   whitelist=["style/set_var_case"])
         self.assertTrue(result)
 
-    @parameterized.expand(parameters)
-    def test_pass_no_quotes(self, matcher, dummy):
-        """Check that style/set_var_case passes.
+    @parameterized.expand(parameters,
+                          testcase_func_doc=format_with_command())
+    def test_pass_no_quotes(self, matcher):
+        """Check that style/set_var_case passes with {}.
 
         Variables set by another CMake command should only be uppercase
         """
@@ -263,48 +273,48 @@ class TestUppercaseVariableNamesOnly(TestCase):
                                   whitelist=["style/set_var_case"])
         self.assertTrue(result)
 
-    @parameterized.expand(parameters)
-    def test_pass_inside_deref(self, matcher, dummy):
-        """Check that style/set_var_case passes when var in deref.
+    @parameterized.expand(parameters,
+                          testcase_func_doc=_FORMAT_WITH_DEREFFED_VAR)
+    def test_pass_inside_deref(self, matcher):
+        """Check that style/set_var_case passes when var in deref, like {}.
 
         Pass if variable is uppercase and inside of a deref, because variable
-        dereferenes are not sink variables.
+        dereferences are not sink variables.
         """
-        xform = lambda x: "${" + x + "}"
+        xform = lambda x: "${" + x + "}"  # suppress(E731)
         result = run_linter_throw(gen_source_line(matcher,
                                                   match_transform=xform),
                                   whitelist=["style/set_var_case"])
         self.assertTrue(result)
 
-    @parameterized.expand(parameters)
-    def test_pass_other_quotes(self, matcher, dummy):
-        """Check that style/set_var_case passes with other args quoted."""
+    @parameterized.expand(parameters,
+                          testcase_func_doc=_FORMAT_WITH_OTHER_QUOTES)
+    def test_pass_other_quotes(self, matcher):
+        """Check that style/set_var_case pass with other args quoted in {}."""
         quote = "\"{0}\""
-        xform = lambda x: quote.format(x)  # pylint:disable=unnecessary-lambda
+        xform = lambda x: quote.format(x)  # suppress(unnecessary-lambda,E731)
         line = gen_source_line(matcher,
                                other_transform=xform)
         result = run_linter_throw(line,
                                   whitelist=["style/set_var_case"])
         self.assertTrue(result)
 
-    @parameterized.expand(parameters)
-    def test_fail_no_quotes(self,
-                            matcher,
-                            _):
-        """Check that style/set_var_case fails."""
+    @parameterized.expand(parameters,
+                          testcase_func_doc=_FORMAT_WITH_LOWERCASE_VAR)
+    def test_fail_no_quotes(self, matcher):  # suppress(no-self-use)
+        """Check that style/set_var_case fails with {}, because lowercase."""
         line = gen_source_line(matcher,
                                match_transform=lambda x: x.lower())
         with ExpectedException(LinterFailure):
             run_linter_throw(line,
                              whitelist=["style/set_var_case"])
 
-    @parameterized.expand(parameters)
-    def test_fail_other_quotes(self,
-                               matcher,
-                               _):
-        """Check that style/set_var_case fails with other args quoted."""
+    @parameterized.expand(parameters,
+                          testcase_func_doc=_FORMAT_QUOTES_AND_LOWER)
+    def test_fail_other_quotes(self, matcher):  # suppress(no-self-use)
+        """Check that style/set_var_case fails with other args quoted in {}."""
         quote = "\"{0}\""
-        xform = lambda x: quote.format(x)  # pylint:disable=unnecessary-lambda
+        xform = lambda x: quote.format(x)  # suppress(unnecessary-lambda,E731)
         line = gen_source_line(matcher,
                                match_transform=lambda x: x.lower(),
                                other_transform=xform)
@@ -312,9 +322,10 @@ class TestUppercaseVariableNamesOnly(TestCase):
             run_linter_throw(line,
                              whitelist=["style/set_var_case"])
 
-    @parameterized.expand(parameters)
-    def test_replace_no_quotes(self, matcher, dummy):
-        """Check that style/set_var_case replace with uppercase.
+    @parameterized.expand(parameters,
+                          testcase_func_doc=_FORMAT_WITH_LOWERCASE_VAR)
+    def test_replace_no_quotes(self, matcher):
+        """Check that style/set_var_case replaces {} with uppercase var.
 
         Replacement should have uppercase matched argument
         """
@@ -323,7 +334,7 @@ class TestUppercaseVariableNamesOnly(TestCase):
                                     match_transform=lambda x: x.lower())
 
         def get_replacement():
-            """Replacement for loweracse variable."""
+            """Replacement for lowercase variable."""
             run_linter_throw(incorrect,
                              whitelist=["style/set_var_case"])
 
@@ -341,7 +352,7 @@ class TestFunctionArgumentsFallOnLine(TestCase):
         self.assertTrue(run_linter_throw("call ($[ONE} TWO THREE \"FOUR\")\n",
                                          whitelist=["style/argument_align"]))
 
-    def test_fail_args_unevenly_spaced(self):
+    def test_fail_args_unevenly_spaced(self):  # suppress(no-self-use)
         """style/argument_align fails if args on same line spaced unevenly."""
         with ExpectedException(LinterFailure):
             run_linter_throw("call (ONE   TWO)\n",
@@ -358,13 +369,13 @@ class TestFunctionArgumentsFallOnLine(TestCase):
         self.assertEqual(replacement(exception),
                          (1, "call (ONE TWO)\n"))
 
-    def test_fail_args_not_aligned(self):
+    def test_fail_args_not_aligned(self):  # suppress(no-self-use)
         """style/argument_align fails when args do not fall on baseline col."""
         with ExpectedException(LinterFailure):
             run_linter_throw("call (ONE\nTWO)\n",
                              whitelist=["style/argument_align"])
 
-    def test_fail_args_dispersed(self):
+    def test_fail_args_dispersed(self):  # suppress(no-self-use)
         """style/argument_align fails if args on same line spaced unevenly."""
         with ExpectedException(LinterFailure):
             run_linter_throw("call (ONE\n"
@@ -372,7 +383,7 @@ class TestFunctionArgumentsFallOnLine(TestCase):
                              "      FOUR)\n",
                              whitelist=["style/argument_align"])
 
-    def test_fail_bad_kw_align(self):
+    def test_fail_bad_kw_align(self):  # suppress(no-self-use)
         """style/argument_align fails if args on same line spaced unevenly."""
         with ExpectedException(LinterFailure):
             run_linter_throw("call (ONE\n"
@@ -380,7 +391,7 @@ class TestFunctionArgumentsFallOnLine(TestCase):
                              "        FOUR)\n",
                              whitelist=["style/argument_align"])
 
-    def test_fail_inconsistent_align(self):
+    def test_fail_inconsistent_align(self):  # suppress(no-self-use)
         """style/argument_align fails when args not aligned after first."""
         with ExpectedException(LinterFailure):
             run_linter_throw("call (${ONE} TWO\n"
@@ -397,8 +408,8 @@ class TestFunctionArgumentsFallOnLine(TestCase):
         def get_replacement():
             """Get replacement for unevenly spaced lines."""
             run_linter_throw("call (ONE\n"
-                             "      TWO\n"
-                             + third_line,
+                             "      TWO\n" +
+                             third_line,
                              whitelist=["style/argument_align"])
 
         exception = self.assertRaises(LinterFailure, get_replacement)
@@ -406,7 +417,7 @@ class TestFunctionArgumentsFallOnLine(TestCase):
                          # eg  call (ONE
                          (3, ("      THREE)\n")))
 
-    def test_fail_align_func_name(self):
+    def test_fail_align_func_name(self):  # suppress(no-self-use)
         """style/argument_align fails when args not aligned after second."""
         with ExpectedException(LinterFailure):
             run_linter_throw("function (ONE TWO\n"
@@ -414,7 +425,7 @@ class TestFunctionArgumentsFallOnLine(TestCase):
                              "endfunction ()\n",
                              whitelist=["style/argument_align"])
 
-    def test_fail_align_macro_name(self):
+    def test_fail_align_macro_name(self):  # suppress(no-self-use)
         """style/argument_align fails when args not aligned after second."""
         with ExpectedException(LinterFailure):
             run_linter_throw("macro (name TWO\n"
@@ -470,8 +481,7 @@ class TestFunctionArgumentsFallOnLine(TestCase):
     ]
 
     @parameterized.expand(nonvariable_keywords)
-    def test_fail_if_kw_not_var_align(self,
-                                      keyword):
+    def test_fail_if_kw_not_var_align(self, keyword):  # suppress(no-self-use)
         """style/argument_align fails when args not aligned after second."""
         kw_len = len(keyword)
         with ExpectedException(LinterFailure):
@@ -481,8 +491,7 @@ class TestFunctionArgumentsFallOnLine(TestCase):
                              whitelist=["style/argument_align"])
 
     @parameterized.expand(nonvariable_keywords)
-    def test_fail_if_kw_not_var_after(self,
-                                      keyword):
+    def test_fail_if_kw_not_var_after(self, keyword):  # suppress(no-self-use)
         """style/argument_align fails when args not aligned after second."""
         with ExpectedException(LinterFailure):
             run_linter_throw("call (ONE\n"
@@ -525,7 +534,7 @@ class TestSingleQuoteUsage(TestCase):
         self.assertTrue(run_linter_throw("call (\"\'ARGUMENT\'\")\n",
                                          whitelist=["style/doublequotes"]))
 
-    def test_fail_use_single_quotes(self):
+    def test_fail_use_single_quotes(self):  # suppress(no-self-use)
         """Check style/doublequotes fails when strings use single quotes."""
         with ExpectedException(LinterFailure):
             run_linter_throw("call (\'ARGUMENT\')\n",
@@ -605,14 +614,14 @@ class TestIndentation(TestCase):
                                          whitelist=["style/indent"],
                                          indent=1))
 
-    def test_fail_one_indent_top_call(self):
+    def test_fail_one_indent_top_call(self):  # suppress(no-self-use)
         """style/indent fails with one indent for toplevel calls."""
         with ExpectedException(LinterFailure):
             run_linter_throw(" function_call ()\n",
                              whitelist=["style/indent"],
                              indent=1)
 
-    def test_fail_one_indent_toplevel(self):
+    def test_fail_one_indent_toplevel(self):  # suppress(no-self-use)
         """style/indent fails with one indent for toplevel defs."""
         with ExpectedException(LinterFailure):
             run_linter_throw(" function (definition ARG)\n endfunction ()",
@@ -620,8 +629,7 @@ class TestIndentation(TestCase):
                              indent=1)
 
     @parameterized.expand(HEADER_BODY_STRUCTURES)
-    def test_fail_bad_term_indent(self,
-                                  structure):
+    def test_fail_bad_term_indent(self, structure):  # suppress(no-self-use)
         """style/indent fails with one indent terminator."""
         with ExpectedException(LinterFailure):
             run_linter_throw("{0} ()\n end{0} ()".format(structure),
@@ -631,7 +639,7 @@ class TestIndentation(TestCase):
     @parameterized.expand([
         "else",
         "elseif"
-    ])
+    ])  # suppress(no-self-use)
     def test_fail_mismatch_if_alt(self, alt):
         """style/indent fails when else, elseif has mismatched indent."""
         with ExpectedException(LinterFailure):
@@ -640,7 +648,7 @@ class TestIndentation(TestCase):
                              whitelist=["style/indent"],
                              indent=1)
 
-    def test_fail_noindent_nested_call(self):
+    def test_fail_noindent_nested_call(self):  # suppress(no-self-use)
         """style/indent fails with zero indents for a nested call."""
         with ExpectedException(LinterFailure):
             script = "function (f ARG)\ncall (ARG)\nendfunction ()"

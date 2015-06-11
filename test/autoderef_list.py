@@ -1,9 +1,9 @@
-# /tests/autoderef_list.py
+# /test/autoderef_list.py
 #
 # Utility helpers to generate situations where variables might be automatically
 # dereferenced.
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Generate situations where variables are automatically dereferenced."""
 
 from collections import namedtuple
@@ -46,15 +46,6 @@ KNOWN_KEYWORDS["while"] = KNOWN_KEYWORDS["if"]
 KNOWN_KEYWORDS["elseif"] = KNOWN_KEYWORDS["if"]
 
 
-def _ignore_keyword(cmd, args):
-    """If the arg's contents are a known keyword then return None."""
-    try:
-        if args is not None:
-            return [arg for arg in args if arg not in KNOWN_KEYWORDS[cmd]]
-    except KeyError:
-        return args
-
-
 def _first_arg():
     """Return a finder for first argument."""
     def generate(transform):
@@ -95,6 +86,9 @@ def _handle_autoderef(cmd, generator):
     """Wrap a finder to handle argument ignoring."""
     return (cmd, generator)
 
+# This constant is used in the unused warnings test.
+#
+# suppress(unused-variable)
 VARIABLES = [
     _handle_autoderef("if", _first_arg()),
     _handle_autoderef("if", _after_arg("NOT")),

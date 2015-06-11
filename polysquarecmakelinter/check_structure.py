@@ -2,7 +2,7 @@
 #
 # Linter checks for script structure
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Linter checks for script structure."""
 
 from cmakeast import ast_visitor

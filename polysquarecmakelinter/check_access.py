@@ -2,7 +2,7 @@
 #
 # Linter checks for access rights
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Linter checks for access rights."""
 
 from polysquarecmakelinter import find_all

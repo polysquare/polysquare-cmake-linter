@@ -2,7 +2,7 @@
 #
 # Linter checks for style guide
 #
-# See LICENCE.md for Copyright information
+# See /LICENCE.md for Copyright information
 """Linter checks for style guide."""
 
 import re
@@ -304,7 +304,7 @@ def func_args_aligned(contents, abstract_syntax_tree):
             if arguments_len == 0:
                 return
 
-            # Check if this was a defintion. If so, then we align after the
+            # Check if this was a definition. If so, then we align after the
             # last argument and not after the first.
             is_definition = (_RE_IS_DEFINITION.match(node.name) is not None)
 
@@ -321,7 +321,7 @@ def func_args_aligned(contents, abstract_syntax_tree):
                 arg = node.arguments[index]
                 # If the argument is on the same line as the function call,
                 # then update align.col and make sure that the argument is one
-                # space away fromt the last argument
+                # space away from the last argument
                 if align.line == arg.line:
                     yield _check_horizontal_space(node, index, contents)
 
@@ -364,7 +364,7 @@ def double_outer_quotes(contents, abstract_syntax_tree):
     return errors
 
 
-# The mccabe checker complains here but that's beacuse it contains lots
+# The mccabe checker complains here but that's because it contains lots
 # of nested functions. There's not much we can do for that.
 def _visit_with_flat_if_depth(abstract_syntax_tree,  # NOQA
                               function_visitor):
