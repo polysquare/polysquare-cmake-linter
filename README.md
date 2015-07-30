@@ -2,9 +2,9 @@
 
 ## Status ##
 
-| Travis CI (Ubuntu) | AppVeyor (Windows) | Coverage | PyPI |
-|--------------------|--------------------|----------|------|
-|[![Travis](https://travis-ci.org/polysquare/polysquare-cmake-linter.svg?branch=master)](https://travis-ci.org/polysquare/polysquare-cmake-linter)|[![AppVeyor](https://ci.appveyor.com/api/projects/status/0c80f40793wce9un/branch/master?svg=true)](https://ci.appveyor.com/project/smspillaz/polysquare-cmake-linter-935/branch/master)|[![Coveralls](https://coveralls.io/repos/polysquare/polysquare-cmake-linter/badge.png?branch=master)](https://coveralls.io/r/polysquare/polysquare-cmake-linter?branch=master)|[![PyPI](https://pypip.in/version/polysquare-cmake-linter/badge.svg)](https://pypi.python.org/pypi/polysquare-cmake-linter/)|
+| Travis CI (Ubuntu) | AppVeyor (Windows) | Coverage | PyPI | Licence |
+|--------------------|--------------------|----------|------|---------|
+|[![Travis](https://img.shields.io/travis/polysquare/polysquare-cmake-linter.svg)](http://travis-ci.org/polysquare/polysquare-cmake-linter)|[![AppVeyor](https://img.shields.io/appveyor/ci/smspillaz/polysquare-cmake-linter-935.svg)](https://ci.appveyor.com/project/smspillaz/polysquare-cmake-linter-935)|[![Coveralls](https://img.shields.io/coveralls/polysquare/polysquare-cmake-linter.svg)](http://coveralls.io/polysquare/polysquare-cmake-linter)|[![PyPIVersion](https://img.shields.io/pypi/v/polysquare-cmake-linter.svg)](https://pypi.python.org/pypi/polysquare-cmake-linter)[![PyPIPythons](https://img.shields.io/pypi/pyversions/polysquare-cmake-linter.svg)](https://pypi.python.org/pypi/polysquare-cmake-linter)|[![License](https://img.shields.io/github/license/polysquare/polysquare-cmake-linter.svg)](http://github.com/polysquare/polysquare-cmake-linter)|
 
 ## Style Guide ##
 

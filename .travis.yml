@@ -6,17 +6,19 @@ cache:
 python:
 - '2.7'
 - '3.4'
-- 'pypy'
+- pypy
+- pypy3
 install:
- - eval $(curl -LSs --retry 100 --connect-timeout 3 public-travis-scripts.polysquare.org/bootstrap.py | python /dev/stdin -d container -s setup/python/setup.py -e bash -p /dev/stdout --cmake-version ${CMAKE_VERSION})
+- eval $(curl -LSs --retry 100 --connect-timeout 3 public-travis-scripts.polysquare.org/bootstrap.py
+  | python /dev/stdin -d container -s setup/python/setup.py -e bash -p /dev/stdout)
 script:
- - polysquare_run check/python/check.py
+- polysquare_run check/python/check.py
 before_cache:
- - polysquare_cleanup
+- polysquare_cleanup
 after_success:
- - polysquare_run coverage/python/coverage.py
+- polysquare_run coverage/python/coverage.py
 before_deploy:
- - polysquare_run deploy/python/deploy.py
+- polysquare_run deploy/python/deploy.py
 deploy:
   provider: pypi
   user:
@@ -26,3 +28,7 @@ deploy:
   on:
     repo: polysquare/polysquare-cmake-linter
     branch: master
+    python: 2.7
+env:
+  global:
+    secure: FGdzl2ZuXVb3F+Rr9llE0MHrYe1qq6AcxHuoUoZrDgkjpUSA5x8bzoW/ZG0PGYh5x5tkRHVyXYo7DvJJY1O9H0I0VoSWZBmNx3iLJLwqSr7O2lRURkIWsmwfs4fuSKiThMz03ZilDRl+uaIv9lJ+yf1pdLSLqyqpHZgQ9BYNP00=
