@@ -13,7 +13,11 @@ import re
 
 import sys
 
+from collections import OrderedDict
+
 from cmakeast import ast
+
+from jobstamps import jobstamp
 
 from polysquarecmakelinter import check_access as access
 from polysquarecmakelinter import check_correctness as correct
@@ -130,33 +134,36 @@ def _parse_arguments(arguments=None):
     parser.add_argument("--checks",
                         nargs=0,
                         action=ShowAvailableChecksAction,
-                        help="list available checks")
+                        help="""list available checks""")
     parser.add_argument("files",
                         nargs="*",
                         metavar=("FILE"),
                         help="read FILE",
-                        type=argparse.FileType("r+"))
+                        type=str)
     parser.add_argument("--whitelist",
                         nargs="*",
-                        help="list of checks that should only be run",
+                        help="""list of checks that should only be run""",
                         default=None)
     parser.add_argument("--blacklist",
                         nargs="*",
-                        help="list of checks that should never be run",
+                        help="""list of checks that should never be run""",
                         default=None)
     parser.add_argument("--indent",
                         nargs=1,
                         type=int,
-                        help="Indent level",
+                        help="""indent level""",
                         default=None)
     parser.add_argument("--namespace",
                         nargs=1,
                         type=str,
-                        help="Namespace for functions",
+                        help="""namespace for functions""",
                         default=None)
     parser.add_argument("--fix-what-you-can",
-                        action="store_const",
-                        const=True)
+                        action="store_true",
+                        help="""automatically fix errors""")
+    parser.add_argument("--stamp-directory",
+                        type=str,
+                        help="""directory to store cached results""")
 
     return parser.parse_args(arguments)
 
@@ -184,44 +191,62 @@ def _apply_replacement(error, found_file, file_lines):
     found_file.truncate()
 
 
+def _jobstamps_kwargs(file_path, cache_output_directory):
+    """Create keyword arguments to pass to jobstamps."""
+    return {
+        "jobstamps_dependencies": [file_path],
+        "jobstamps_cache_output_directory": cache_output_directory
+    }
+
+
+def _sorted_if_exists(list_object):
+    """Return sorted list if it exists."""
+    return sorted(list_object) if list_object else None
+
+
 def main(arguments=None):
     """Entry point for the linter."""
     result = _parse_arguments(arguments)
 
     num_errors = 0
-    for found_file in result.files:
-        file_path = os.path.abspath(found_file.name)
-        file_contents = found_file.read()
-        file_lines = file_contents.splitlines(True)
-        try:
-            kwargs = {}
-            if result.namespace is not None:
-                kwargs["namespace"] = result.namespace[0]
+    for found_file_name in result.files:
+        with open(found_file_name, "r+") as found_file:
+            file_path = os.path.abspath(found_file_name)
+            file_contents = found_file.read()
+            file_lines = file_contents.splitlines(True)
+            try:
+                kwargs = OrderedDict()
+                if result.namespace is not None:
+                    kwargs["namespace"] = result.namespace[0]
 
-            if result.indent is not None:
-                kwargs["indent"] = result.indent[0]
+                if result.indent is not None:
+                    kwargs["indent"] = result.indent[0]
 
-            errors = lint(file_contents,  # suppress(star-args)
-                          result.whitelist,
-                          result.blacklist,
-                          **kwargs)
-        except RuntimeError as err:
-            msg = "RuntimeError in processing {0} - {1}".format(file_path,
-                                                                str(err))
-            raise RuntimeError(msg)
+                kwargs.update(_jobstamps_kwargs(file_path,
+                                                result.stamp_directory))
 
-        for error in errors:
-            if not should_ignore(file_lines[error[1].line - 1], error[0]):
-                _report_lint_error(error, file_path)
-                if (result.fix_what_you_can and
-                        error[1].replacement is not None):
-                    _apply_replacement(error, found_file, file_lines)
-                    sys.stderr.write(" ... FIXED\n")
-                    break
+                errors = jobstamp.run(lint,
+                                      file_contents,  # suppress(star-args)
+                                      _sorted_if_exists(result.whitelist),
+                                      _sorted_if_exists(result.blacklist),
+                                      **kwargs)
+            except RuntimeError as err:
+                msg = "RuntimeError in processing {0} - {1}".format(file_path,
+                                                                    str(err))
+                raise RuntimeError(msg)
 
-                sys.stderr.write("\n")
+            for error in errors:
+                if not should_ignore(file_lines[error[1].line - 1], error[0]):
+                    _report_lint_error(error, file_path)
+                    if (result.fix_what_you_can and
+                            error[1].replacement is not None):
+                        _apply_replacement(error, found_file, file_lines)
+                        sys.stderr.write(" ... FIXED\n")
+                        break
 
-                num_errors += 1
+                    sys.stderr.write("\n")
+
+                    num_errors += 1
 
     return num_errors
 
