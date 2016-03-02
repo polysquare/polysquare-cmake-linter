@@ -32,11 +32,7 @@ setup(name="polysquare-cmake-linter",
       install_requires=["cmakeast>=0.0.7",
                         "jobstamps>=0.0.16"],
       extras_require={
-          "green": ["testtools",
-                    "nose",
-                    "nose-parameterized>=0.5.0",
-                    "setuptools-green"],
-          "polysquarelint": ["polysquare-setuptools-lint"]
+          "upload": ["setuptools-markdown"]
       },
       entry_points={
           "console_scripts": [
