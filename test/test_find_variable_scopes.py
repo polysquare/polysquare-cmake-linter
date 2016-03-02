@@ -27,7 +27,6 @@ VarSrc = VariableSource
 
 
 class TestFindVariablesInScopes(TestCase):
-
     """Test fixture for the in_tree function."""
 
     params = [param(m) for m in FUNCTIONS_SETTING_VARS]
@@ -188,7 +187,6 @@ VARIABLE_USAGE_METHODS = [
 
 
 class TestUsedInTree(TestCase):
-
     """Test fixture for used_in_tree func."""
 
     @parameterized.expand(VARIABLE_USAGE_METHODS)

@@ -43,7 +43,6 @@ def run_linter_main(filename, *args, **kwargs):
 
 
 class TestLinterAcceptance(TestCase):
-
     """Acceptance tests for linter.main()."""
 
     def __init__(self, *args, **kwargs):

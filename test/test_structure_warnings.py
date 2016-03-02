@@ -17,7 +17,6 @@ from testtools import TestCase
 
 
 class TestFunctionsMustBeNamespaces(TestCase):
-
     """Test that all functions must be namespaced."""
 
     @parameterized.expand(DEFINITION_TYPES)

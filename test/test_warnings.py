@@ -11,7 +11,6 @@ from testtools import TestCase
 
 
 class TestIgnoreLines(TestCase):
-
     """Test case for line-ignore logic."""
 
     def test_ignore_nolint_wildcard(self):

@@ -17,7 +17,6 @@ from polysquarecmakelinter import ignore
 # suppress(too-few-public-methods)
 class _SetVariable(namedtuple("_SetVariable",
                               "cmd find sub")):
-
     """_SetVariable namedtuple with default variable for sub."""
 
     def __new__(cls, cmd, find, sub=None):
@@ -30,7 +29,6 @@ def _find_arg_no_factory(mixin):
     def _find_arg_no(num):
         """Return an argument finder for argument at num."""
         class Finder(mixin, object):  # suppress(too-few-public-methods)
-
             """Finder for arguments after num."""
 
             def __call__(self, arguments):  # suppress(no-self-use)
@@ -50,7 +48,6 @@ def _find_after_arg_factory(mixin):
     def _find_after_arg(argument):
         """Return an argument finder for an argument after argument."""
         class Finder(mixin, object):  # suppress(too-few-public-methods)
-
             """Finder for arguments after argument."""
 
             def __call__(self, arguments):  # suppress(no-self-use)
@@ -71,7 +68,6 @@ def _find_after_arg_factory(mixin):
 
 
 class _EmptyMixin(object):  # suppress(too-few-public-methods)
-
     """An empty mixin to pass to argument factories."""
 
 

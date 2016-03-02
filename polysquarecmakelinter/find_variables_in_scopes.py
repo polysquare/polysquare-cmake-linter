@@ -103,7 +103,6 @@ IF_KEYWORDS = [
 # We use a class with constant variables here so that we can get int->int
 # comparison. Comparing enums is slow because of the type lookup.
 class VariableSource(object):  # suppress(too-few-public-methods)
-
     """The source of a variable in a scope."""
 
     ForeachVar = 0
@@ -115,7 +114,6 @@ class VariableSource(object):  # suppress(too-few-public-methods)
 
 
 class ScopeType(object):  # suppress(too-few-public-methods)
-
     """The source of a variable in a scope."""
 
     Foreach = 0
@@ -125,7 +123,6 @@ class ScopeType(object):  # suppress(too-few-public-methods)
 
 
 class _Scope(object):  # suppress(too-few-public-methods)
-
     """A place where variables are hoisted."""
 
     def __init__(self, info, parent):
@@ -288,7 +285,6 @@ def set_in_tree(abstract_syntax_tree):
     def scope_factory(info, parent):
         """Construct a "set variables" scope."""
         class SetVariablesScope(_Scope):  # suppress(too-few-public-methods)
-
             """Set variables in this scope."""
 
             def __init__(self, info, parent):
@@ -356,7 +352,6 @@ def used_in_tree(abstract_syntax_tree):
     def scope_factory(info, parent):
         """Construct a "set variables" scope."""
         class UsedVariablesScope(_Scope):  # suppress(too-few-public-methods)
-
             """Used variables in this scope."""
 
             def __init__(self, info, parent):
