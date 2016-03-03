@@ -37,7 +37,6 @@ for variable in check_correctness.ALWAYS_QUOTE_VARIABLES_CONTAINING:
 
 
 class TestQuoteVariablesWhichMayHaveSpaces(TestCase):
-
     """Test case for ensuring that certain variables are always quoted."""
 
     @parameterized.expand(QUOTE_ONLY_TEST_VARIABLES)

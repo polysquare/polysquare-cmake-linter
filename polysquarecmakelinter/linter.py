@@ -110,7 +110,6 @@ def lint(contents,
 
 # suppress(too-few-public-methods)
 class ShowAvailableChecksAction(argparse.Action):
-
     """If --checks is encountered, just show available checks and exit."""
 
     def __call__(self, parser, namespace, values, option_string=None):

@@ -14,7 +14,6 @@ from collections import namedtuple
 # suppress(too-few-public-methods)
 class LinterFailure(namedtuple("LinterFailure",
                                "description line replacement")):
-
     """An immutable type representing a linter failure."""
 
     def __new__(cls, description, line, replacement=None):

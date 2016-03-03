@@ -192,10 +192,7 @@ def _expected_alignment(arg,
             # this line (only this column)
             line = None
 
-        if arg.type == WordType.Variable:
-            line_has_kw = True
-        else:
-            line_has_kw = False
+        line_has_kw = (arg.type == WordType.Variable)
         col = arg.col
 
     # If we're on our currently aligned line, and this line starts

@@ -21,7 +21,6 @@ from testtools import TestCase
 
 
 class TestSpaceBeforeFunctionCallWarnings(TestCase):
-
     """Test case for a single space between a function call and name."""
 
     def test_lint_pass(self):
@@ -108,7 +107,6 @@ class TestSpaceBeforeFunctionCallWarnings(TestCase):
 
 
 class TestFunctionsMustbeLowercaseOnly(TestCase):
-
     """Test case for functions and macros being lowercase."""
 
     def test_pass_lowercase_call(self):
@@ -196,7 +194,6 @@ class TestFunctionsMustbeLowercaseOnly(TestCase):
 
 
 class TestUppercaseDefinitionArguments(TestCase):
-
     """Check that all arguments to a definition are uppercase."""
 
     @parameterized.expand(DEFINITION_TYPES)
@@ -246,7 +243,6 @@ _FORMAT_QUOTES_AND_LOWER = format_with_command(var_xform=lambda x: x.lower(),
 
 
 class TestUppercaseVariableNamesOnly(TestCase):
-
     """Test case for uppercase variable names only."""
 
     parameters = [param(m) for m in FUNCTIONS_SETTING_VARS]
@@ -344,7 +340,6 @@ class TestUppercaseVariableNamesOnly(TestCase):
 
 
 class TestFunctionArgumentsFallOnLine(TestCase):
-
     """Test alignment of function arguments."""
 
     def test_pass_args_on_same_line(self):
@@ -521,7 +516,6 @@ class TestFunctionArgumentsFallOnLine(TestCase):
 
 
 class TestSingleQuoteUsage(TestCase):
-
     """Test that we are only allowed to use double quotes for strings."""
 
     def test_pass_use_double_quotes(self):
@@ -573,7 +567,6 @@ HEADER_BODY_STRUCTURES = [
 
 
 class TestIndentation(TestCase):
-
     """Test indentation checks."""
 
     def test_pass_no_indent_spec(self):

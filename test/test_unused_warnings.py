@@ -23,7 +23,6 @@ from testtools import (ExpectedException, TestCase)
 
 
 class TestPrivateFunctionsMustBeUsed(TestCase):
-
     """Test that private functions must be used."""
 
     @parameterized.expand(DEFINITION_TYPES)
@@ -73,7 +72,6 @@ def _format_with_generator(func, _, params):
 
 
 class TestUnusedSetVariablesInBody(TestCase):
-
     """Check for unused set variables in a function/macro body."""
 
     parameters = [param(m) for m in FUNCTIONS_SETTING_VARS]
@@ -179,7 +177,6 @@ _PRIVATE_VAR_SET_FORMAT = format_with_command(lambda x: "_{}".format(x))
 
 
 class TestUnusedPrivateToplevelVars(TestCase):
-
     """Check for unused set private variables at the top level."""
 
     parameters = [param(m) for m in FUNCTIONS_SETTING_VARS]

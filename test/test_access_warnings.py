@@ -17,7 +17,6 @@ from testtools import (ExpectedException, TestCase)
 
 
 class TestPrivateFunctionsUsedMustBeDefinedInThisModule(TestCase):
-
     """Test that private functions used are defined in this module."""
 
     @parameterized.expand(DEFINITION_TYPES)
@@ -46,7 +45,6 @@ _PRIVATE_VAR_SET_FORMAT = format_with_command(lambda x: "_{}".format(x))
 
 
 class TestNoUseOtherPrivateToplevelVars(TestCase):
-
     """Check that private variables not set by us are not used."""
 
     parameters = [param(m) for m in FUNCTIONS_SETTING_VARS]
