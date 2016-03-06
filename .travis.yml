@@ -31,4 +31,4 @@ deploy:
     python: 2.7
 env:
   global:
-    secure: FGdzl2ZuXVb3F+Rr9llE0MHrYe1qq6AcxHuoUoZrDgkjpUSA5x8bzoW/ZG0PGYh5x5tkRHVyXYo7DvJJY1O9H0I0VoSWZBmNx3iLJLwqSr7O2lRURkIWsmwfs4fuSKiThMz03ZilDRl+uaIv9lJ+yf1pdLSLqyqpHZgQ9BYNP00=
+    secure: F8tw2r6KiBsV1S9Pkr5iab2iHKAgaFgAeg67qlM+s9xII9U3l8svJgoFP6C8tmWs2RVCQte+7C8bFSrhOFa0uqv2F0sSTYIhF41fUJvwjGdrkAByLUyIWry1fHrKRp432FZ1Z2JgsGvt/IxzYs+oiyAnEzyZ/1OHBTV9UADG7bU=
