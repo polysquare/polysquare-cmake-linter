@@ -9,7 +9,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 setup(name="polysquare-cmake-linter",
-      version="0.0.14",
+      version="0.0.15",
       description="""Polysquare CMake Linter""",
       long_description_markdown_filename="README.md",
       author="Sam Spilsbury",
