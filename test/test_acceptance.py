@@ -48,7 +48,7 @@ class TestLinterAcceptance(TestCase):
     def __init__(self, *args, **kwargs):
         """"Initialize class variables."""
         cls = TestLinterAcceptance
-        super(cls, self).__init__(*args,  # suppress(R0903
+        super(cls, self).__init__(*args,  # suppress(R903)
                                   **kwargs)
         self._temporary_file = None
 
